@@ -1,0 +1,19 @@
+{
+  "name": "ecs-framework",
+  "version": "0.0.1",
+  "description": "an ECS framework for javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xevrem/ecs-framework.git"
+  },
+  "author": "Erika V. Jonell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xevrem/ecs-framework/issues"
+  },
+  "homepage": "https://github.com/xevrem/ecs-framework#readme"
+}
