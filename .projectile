@@ -1,0 +1,10 @@
+-/node_modules
+-/coverage
+-/.git
+-/.gitlab
+-/.vscode
+-/yarn.lock
+-/package-lock.json
+-/package.json
+-/.cache
+-/dist
