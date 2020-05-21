@@ -60,7 +60,14 @@ describe('Component', () => {
       expect(comp.type).toEqual(5);
       expect(foo.type).toEqual(3);
     });
+  });
 
+  describe('ownership', ()=> {
+    class Foo extends Component { };
+
+    it('should have an owner', ()=>{
+
+    });
   });
 
 });
