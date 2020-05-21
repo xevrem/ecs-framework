@@ -8,8 +8,8 @@ export class ComponentMapper {
             .get(this.__type)
             .get(entity.id);
     }
-    static get(type, entity, ecsInstance) {
-        return ecsInstance.componentManager.components.get(type).get(entity.id);
+    static get(component, entity, ecsInstance) {
+        return ecsInstance.componentManager.components.get(component.type).get(entity.id);
     }
 }
 //# sourceMappingURL=ComponentMapper.js.map

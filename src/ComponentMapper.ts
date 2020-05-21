@@ -5,7 +5,7 @@ import { EcsInstance } from "EcsInstance";
 export class ComponentMapper {
   private __type: number;
   private __ecsInstance: EcsInstance;
- 
+
   constructor(component: Component, ecsInstance: EcsInstance) {
     this.__type = component.type;
     this.__ecsInstance = ecsInstance;
@@ -17,7 +17,7 @@ export class ComponentMapper {
       .get(entity.id);
   }
 
-  static get(type: number, entity: Entity, ecsInstance: EcsInstance): Component {
-    return ecsInstance.componentManager.components.get(type).get(entity.id);
+  static get(component: Component, entity: Entity, ecsInstance: EcsInstance): Component {
+    return ecsInstance.componentManager.components.get(component.type).get(entity.id);
   }
 }
