@@ -65,3 +65,7 @@ package-lock.json
 
 # parcel related
 .cache
+
+# ts related
+/build
+/src/**/*.test.js

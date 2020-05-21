@@ -1,53 +1,60 @@
 import { Bag } from './Bag';
+import { Component } from './Component';
+import { EcsInstance } from './EcsInstance';
+import { Entity } from './Entity';
 
 export class ComponentManager {
-  constructor(ecsInstance) {
+  __ecsInstance: EcsInstance;
+  __components: Bag<Bag<Component>>;
+  __nextTypeId: number;
+
+  constructor(ecsInstance: EcsInstance) {
     this.__ecsInstance = ecsInstance;
-    this.__components = new Bag();
+    this.__components = new Bag<Bag<Component>>();
     this.__nextTypeId = 0;
   }
 
-  registerComponent(component) {
+  registerComponent(component: Component): void {
     if (!(component.type >= 0)) {
       component.type = this.__nextTypeId++;
     }
     if (component.type < this.__components.capacity) {
       if (this.__components.get(component.type) === undefined) {
-        this.__components.set(component.type, new Bag());
+        this.__components.set(component.type, new Bag<Component>());
       }
     } else {
-      this.__components.set(component.type, new Bag());
+      this.__components.set(component.type, new Bag<Component>());
     }
   }
 
-  get components() {
+  get components(): Bag<Bag<Component>> {
     return this.__components;
   }
 
-  getComponent(entity, component) {
+  getComponent(entity: Entity, component: Component): Component {
     return this.__components.get(component.type).get(entity.id);
   }
 
-  addComponent(entity, component) {
+  addComponent(entity: Entity, component: Component): void {
     component.owner = entity.id;
     this.__components.get(component.type).set(entity.id, component);
   }
 
-  removeComponents(entity) {
+  removeComponents(entity: Entity): void {
     for (let i = 0; i < this.__components.count; i++) {
       this.__components.get(i).set(entity.id, undefined);
     }
   }
 
-  removeComponent(component) {
+  removeComponent(component: Component): void {
     this.__components.get(component.type).set(component.owner, undefined);
   }
 
-  deleteEntity(entity) {
+  deleteEntity(entity: Entity): void {
     this.removeComponents(entity);
   }
 
-  hasComponent(entity, type) {
+  hasComponent(entity: Entity, type: number): boolean {
     if (type < this.__components.capacity) {
       if (entity.id < this.__components.get(type).capacity) {
         if (this.__components.get(type).get(entity.id) !== undefined) {
@@ -58,7 +65,7 @@ export class ComponentManager {
     return false;
   }
 
-  cleanUp() {
+  cleanUp(): void {
     for (let i = 0; i < this.__components.count; i++) {
       if (this.__components.get(i) !== undefined) {
         this.__components.get(i).clear();

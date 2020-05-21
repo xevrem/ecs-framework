@@ -1,11 +1,14 @@
-import { Bag } from 'Bag';
+import { Bag } from './Bag';
+
+import { Entity } from './Entity';
+
 
 export class GroupManager {
-  constructor() {
-    this.__groups = {};
-  }
+  private __groups: {
+    [key: string]: Bag<Entity>
+  } = {};
 
-  addEntityToGroup(group, entity) {
+  addEntityToGroup(group: string, entity: Entity): void {
     if (!this.__groups.hasOwnProperty(group)) {
       this.__groups[group] = new Bag();
     }
@@ -15,19 +18,19 @@ export class GroupManager {
     }
   }
 
-  getGroup(group) {
+  getGroup(group: string): Bag<Entity> {
     return this.__groups[group];
   }
 
-  refresh(entity) {}
+  // refresh(entity) { }
 
-  deleteEntity(entity) {
-    Object.values(this.__groups).forEach(group => {
+  deleteEntity(entity: Entity): void {
+    Object.values(this.__groups).forEach((group: Bag<Entity>) => {
       group.remove(entity);
     });
   }
 
-  cleanUp() {
+  cleanUp(): void {
     Object.keys(this.__groups).forEach(key => {
       this.__groups[key].clear();
       delete this.__groups[key];

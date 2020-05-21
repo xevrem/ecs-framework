@@ -1,13 +1,22 @@
-export class SystemManager {
-  __ecsInstance = null;
-  __systems = [];
+import { EcsInstance } from "./EcsInstance";
+import { EntitySystem } from "./EntitySystem";
+import { Component } from "./Component";
+import { Entity } from "./Entity";
 
-  constructor(ecsInstance) {
+export class SystemManager {
+  private __ecsInstance: EcsInstance;
+  private __systems: Array<EntitySystem>;
+
+  constructor(ecsInstance: EcsInstance) {
     this.__ecsInstance = ecsInstance;
     this.__systems = [];
   }
 
-  setSystem(system, ...components) {
+  get systems(): Array<EntitySystem> {
+    return this.__systems;
+  }
+
+  setSystem(system: EntitySystem, ...components: Component[]): EntitySystem {
     components.forEach(component => {
       this.__ecsInstance.componentManager.registerComponent(component);
       system.componentTypes.push(component.type);
@@ -17,15 +26,15 @@ export class SystemManager {
     return system;
   }
 
-  initializeSystems() {
+  initializeSystems(): void {
     this.__systems.forEach(system => system.initialize());
   }
 
-  systemsLoadContent() {
+  systemsLoadContent(): void {
     this.__systems.forEach(system => system.loadContent());
   }
 
-  resolve(entity) {
+  resolve(entity: Entity): void {
     let valid = false;
 
     this.__systems.forEach(system => {
@@ -35,18 +44,18 @@ export class SystemManager {
       });
       if (valid) {
         system.addEntity(entity);
-      }else{
+      } else {
         // attempt to remove if we ever had it before
         system.removeEntity(entity);
       }
     });
   }
 
-  deleteEntity(entity) {
+  deleteEntity(entity: Entity): void {
     this.__systems.forEach(system => system.removeEntity(entity));
   }
 
-  cleanUp() {
+  cleanUp(): void {
     this.__systems.forEach(system => system.cleanSystem());
     this.__systems = [];
   }

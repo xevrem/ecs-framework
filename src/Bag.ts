@@ -1,45 +1,45 @@
-export class Bag {
-  __data = [];
-  __count = 0;
+export class Bag<T> {
+  __data: Array<T> = [];
+  __count: number = 0;
 
-  constructor(capacity = 16) {
+  constructor(capacity: number = 16) {
     this.__data = new Array(capacity);
     this.__count = 0;
   }
 
-  get capacity() {
+  get capacity(): number {
     return this.__data.length;
   }
 
-  get isEmpty() {
+  get isEmpty(): boolean {
     return this.__count === 0;
   }
 
-  get count() {
+  get count(): number {
     return this.__count;
   }
 
-  forEach(...args) {
-    return this.__data.forEach(...args);
+  forEach(args: (item: T, index: number, array: Array<T>) => void, context?: Bag<T>): void {
+    return this.__data.forEach(args, context);
   }
 
-  map(...args) {
-    return this.__data.map(...args);
+  map(args: (item: T, index: number, array: Array<T>) => T, context?: Bag<T>): Array<T> {
+    return this.__data.map(args, context);
   }
 
-  filter(...args) {
-    return this.__data.filter(...args);
+  filter(args: (item: T, index: number, array: Array<T>) => boolean, context?: Bag<T>): Array<T> {
+    return this.__data.filter(args, context);
   }
 
-  reduce(...args) {
-    return this.__data.reduce(...args);
+  reduce(args: (acc: any, item: T, index: number, array: Array<T>) => any, init: any): any {
+    return this.__data.reduce(args, init);
   }
 
-  get(index) {
+  get(index: number): T {
     return this.__data[index];
   }
 
-  set(index, value) {
+  set(index: number, value: T): T {
     if (index < 0) {
       return null;
     }
@@ -52,7 +52,7 @@ export class Bag {
     return value;
   }
 
-  add(element) {
+  add(element: T) {
     if (this.__count >= this.__data.length) {
       this.grow();
     }
@@ -60,8 +60,8 @@ export class Bag {
     this.__count++;
   }
 
-  addRange(bag) {
-    for (let i = 0; bag.length > i; i++) {
+  addRange(bag: Bag<T>) {
+    for (let i = 0; bag.count > i; i++) {
       this.add(bag.get(i));
     }
   }
@@ -71,16 +71,16 @@ export class Bag {
     this.__count = 0;
   }
 
-  contains(element, compare = (a, b) => a === b) {
-    return !!this.__data.find(cur => compare(element, cur));
+  contains(element: T, compare = (a: T, b: T) => a === b): boolean {
+    return !!this.__data.find((cur: T) => compare(element, cur));
   }
 
-  remove(element) {
+  remove(element: T): T {
     const index = this.__data.indexOf(element);
     return this.removeAt(index);
   }
 
-  removeAt(index) {
+  removeAt(index: number): T {
     if (index < this.__data.length && index >= 0) {
       const item = this.__data[index];
       this.__count--;
@@ -92,14 +92,14 @@ export class Bag {
     }
   }
 
-  removeLast() {
+  removeLast(): T {
     this.__count--;
     const item = this.__data[this.__count];
     this.__data[this.__count] = undefined;
     return item;
   }
 
-  grow(size = 2 * this.__data.length + 1) {
+  grow(size: number = 2 * this.__data.length + 1) {
     this.__data = [...this.__data, ...new Array(size - this.__data.length)];
   }
 }

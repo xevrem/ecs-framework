@@ -1,7 +1,8 @@
-import { EcsInstance } from 'EcsInstance';
+import { EcsInstance } from './EcsInstance';
 
 describe('EcsInstance', () => {
   it('should create an ECS instance without crashing', () => {
-    const instance = new EcsInstance();
+    new EcsInstance();
   });
 });
+ 
