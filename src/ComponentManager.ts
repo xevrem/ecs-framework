@@ -14,7 +14,7 @@ export class ComponentManager {
     this.__nextTypeId = 0;
   }
 
-  registerComponent(component: typeof Component): void {
+  registerComponent(component: Component): void {
     if (!(component.type >= 0)) {
       component.type = this.__nextTypeId++;
     }
