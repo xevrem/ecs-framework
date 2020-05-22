@@ -1,6 +1,6 @@
 export class ComponentMapper {
-    constructor(type, ecsInstance) {
-        this._type = type;
+    constructor(component, ecsInstance) {
+        this._type = component.type;
         this._ecsInstance = ecsInstance;
     }
     get(entity) {
@@ -8,8 +8,8 @@ export class ComponentMapper {
             .get(this._type)
             .get(entity.id);
     }
-    static get(type, entity, ecsInstance) {
-        return ecsInstance.componentManager.components.get(type).get(entity.id);
+    static get(component, entity, ecsInstance) {
+        return ecsInstance.componentManager.components.get(component.type).get(entity.id);
     }
 }
 //# sourceMappingURL=ComponentMapper.js.map

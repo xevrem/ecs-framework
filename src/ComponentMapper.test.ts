@@ -13,15 +13,15 @@ describe('ComponentMapper', ()=>{
   });
 
   it('should be intantiable',()=>{
-    new ComponentMapper(Foo.type, ecs);
+    new ComponentMapper(Foo, ecs);
   });
 
   it('should get components', ()=>{
-    const cm = new ComponentMapper(Foo.type, ecs);
+    const cm = new ComponentMapper(Foo, ecs);
     expect(cm.get(new Entity())).toBeUndefined();
   });
 
   it('should statically get components', ()=> {
-    expect(ComponentMapper.get(Foo.type, new Entity(), ecs)).toBeUndefined();
+    expect(ComponentMapper.get(Foo, new Entity(), ecs)).toBeUndefined();
   });
 });

@@ -4,7 +4,7 @@ import { EcsInstance } from "./EcsInstance";
 export declare class ComponentMapper {
     private _type;
     private _ecsInstance;
-    constructor(type: number, ecsInstance: EcsInstance);
+    constructor(component: typeof Component, ecsInstance: EcsInstance);
     get(entity: Entity): Component;
-    static get(type: number, entity: Entity, ecsInstance: EcsInstance): Component;
+    static get(component: typeof Component, entity: Entity, ecsInstance: EcsInstance): Component;
 }

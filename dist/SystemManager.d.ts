@@ -7,7 +7,7 @@ export declare class SystemManager {
     private __systems;
     constructor(ecsInstance: EcsInstance);
     get systems(): Array<EntitySystem>;
-    setSystem(system: EntitySystem, ...components: Component[]): EntitySystem;
+    setSystem(system: EntitySystem, ...components: typeof Component[]): EntitySystem;
     initializeSystems(): void;
     systemsLoadContent(): void;
     resolve(entity: Entity): void;

@@ -16,7 +16,7 @@ export class SystemManager {
     return this.__systems;
   }
 
-  setSystem(system: EntitySystem, ...components: Component[]): EntitySystem {
+  setSystem(system: EntitySystem, ...components: typeof Component[]): EntitySystem {
     components.forEach(component => {
       this.__ecsInstance.componentManager.registerComponent(component);
       system.componentTypes.push(component.type);

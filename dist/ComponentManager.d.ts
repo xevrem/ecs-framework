@@ -7,7 +7,7 @@ export declare class ComponentManager {
     __components: Bag<Bag<Component>>;
     __nextTypeId: number;
     constructor(ecsInstance: EcsInstance);
-    registerComponent(component: Component): void;
+    registerComponent(component: typeof Component): void;
     get components(): Bag<Bag<Component>>;
     getComponent(entity: Entity, component: Component): Component;
     addComponent(entity: Entity, component: Component): void;
