@@ -1,6 +1,6 @@
-import { Entity } from "Entity";
-import { Component } from "Component";
-import { EcsInstance } from "EcsInstance";
+import { Entity } from "./Entity";
+import { Component } from "./Component";
+import { EcsInstance } from "./EcsInstance";
 export declare class ComponentMapper {
     private _type;
     private _ecsInstance;
