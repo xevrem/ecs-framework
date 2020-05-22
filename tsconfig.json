@@ -12,8 +12,6 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
     "outDir": "./dist",
     "baseUrl": "./src"
   },
