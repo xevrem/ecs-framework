@@ -1,6 +1,4 @@
-import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
-import { Entity } from './Entity';
 import { EntitySystem } from './EntitySystem';
 import { Component } from './Component';
 import { SystemManager } from './SystemManager';
@@ -12,24 +10,6 @@ describe('SystemManager', () => {
   }
 
   class Sys extends EntitySystem {
-    initialize(): void {
-    }
-    preLoadContent(_entities: Bag<Entity>): void {
-    }
-    removed(entity: Entity): void {
-    }
-    added(entity: Entity): void {
-    }
-    updated(entity: Entity): void {
-    }
-    cleanUp(entities: Bag<Entity>): void {
-    }
-    begin(): void {
-    }
-    end(): void {
-    }
-    process(entity: Entity, delta: number): void {
-    }
   }
 
   beforeEach(() => {
@@ -45,7 +25,7 @@ describe('SystemManager', () => {
 
   it('should be able to setSystem', () => {
     const manager = new SystemManager(instance);
-    const result = manager.setSystem(system, component);
+    const result = manager.setSystem(system, Comp);
     expect(result).toEqual(system);
     expect(manager.systems.includes(system)).toBeTruthy();
     expect(result.componentTypes.includes(component.type)).toBeTruthy();
@@ -54,7 +34,7 @@ describe('SystemManager', () => {
   it('should initializeSystems', () => {
     const manager = new SystemManager(new EcsInstance());
     const spy = jest.spyOn(system, 'initialize');
-    manager.setSystem(system, component);
+    manager.setSystem(system, Comp);
     manager.initializeSystems();
     expect(spy).toHaveBeenCalled();
   });
@@ -62,7 +42,7 @@ describe('SystemManager', () => {
   it('should systemsLoadContent', () => {
     const manager = new SystemManager(new EcsInstance());
     const spy = jest.spyOn(system, 'loadContent');
-    manager.setSystem(system, component);
+    manager.setSystem(system, Comp);
     manager.systemsLoadContent();
     expect(spy).toHaveBeenCalled();
   });
@@ -70,7 +50,7 @@ describe('SystemManager', () => {
   describe('integrations', () => {
     it('should resolve entities', () => {
       const ecs = new EcsInstance();
-      system = ecs.systemManager.setSystem(new Sys(), new Comp());
+      system = ecs.systemManager.setSystem(new Sys(), Comp);
       const entity = ecs.create();
       ecs.addComponent(entity, new Comp());
       ecs.systemManager.resolve(entity);

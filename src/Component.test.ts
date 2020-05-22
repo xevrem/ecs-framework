@@ -66,7 +66,8 @@ describe('Component', () => {
     class Foo extends Component { };
 
     it('should have an owner', ()=>{
-
+      let foo = new Foo();
+      expect(foo).not.toBeNull()
     });
   });
 

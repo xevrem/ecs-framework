@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --watch",
     "watch": "tsc --watch --noEmit",
-    "build": "tsc build"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

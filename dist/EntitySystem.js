@@ -1,41 +1,41 @@
 import { Bag } from './Bag';
 export class EntitySystem {
     constructor() {
-        this.__componentTypes = [];
-        this.__entities = new Bag();
-        this.__ecsInstance = null;
+        this._componentTypes = [];
+        this._entities = new Bag();
+        this._ecsInstance = null;
     }
     get ecsInstance() {
-        return this.__ecsInstance;
+        return this._ecsInstance;
     }
     set ecsInstance(value) {
-        this.__ecsInstance = value;
+        this._ecsInstance = value;
     }
     get componentTypes() {
-        return this.__componentTypes;
+        return this._componentTypes;
     }
     set componentTypes(value) {
-        this.__componentTypes = value;
+        this._componentTypes = value;
     }
     get entities() {
-        return this.__entities;
+        return this._entities;
     }
     loadContent() {
-        this.preLoadContent(this.__entities);
+        this.preLoadContent(this._entities);
     }
     removeEntity(entity) {
-        if (this.__entities.remove(entity))
+        if (this._entities.remove(entity))
             this.removed(entity);
     }
     addEntity(entity) {
-        if (!this.__entities.contains(entity, (a, b) => b && a.id === b.id)) {
-            this.__entities.add(entity);
+        if (!this._entities.contains(entity, (a, b) => b && a.id === b.id)) {
+            this._entities.add(entity);
             this.added(entity);
         }
     }
     cleanSystem() {
-        this.cleanUp(this.__entities);
-        this.__entities.clear();
+        this.cleanUp(this._entities);
+        this._entities.clear();
     }
     processAll() {
         if (this.shouldProcess()) {
@@ -45,8 +45,8 @@ export class EntitySystem {
         }
     }
     processEntities() {
-        this.__entities.forEach((entity) => {
-            entity && this.process(entity, this.__ecsInstance.delta);
+        this._entities.forEach((entity) => {
+            entity && this.process(entity, this._ecsInstance.delta);
         });
     }
     shouldProcess() {

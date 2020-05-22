@@ -12,7 +12,6 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "declaration": true,
     "outDir": "./dist",
     "baseUrl": "./src"
   },
@@ -20,7 +19,7 @@
     "./src/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "./src/**/*.test.ts"
+    // "./src/**/*.test.ts",
+    "node_modules"
   ]
 }

@@ -3,48 +3,48 @@ import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
 
 export class EntitySystem {
-  __componentTypes: Array<number> = [];
-  __entities: Bag<Entity> = new Bag<Entity>();
-  __ecsInstance: EcsInstance = null;
+  _componentTypes: Array<number> = [];
+  _entities: Bag<Entity> = new Bag<Entity>();
+  _ecsInstance: EcsInstance = null;
 
   get ecsInstance(): EcsInstance {
-    return this.__ecsInstance;
+    return this._ecsInstance;
   }
 
   set ecsInstance(value: EcsInstance) {
-    this.__ecsInstance = value;
+    this._ecsInstance = value;
   }
 
   get componentTypes(): Array<number> {
-    return this.__componentTypes;
+    return this._componentTypes;
   }
 
   set componentTypes(value: Array<number>) {
-    this.__componentTypes = value;
+    this._componentTypes = value;
   }
 
   get entities(): Bag<Entity> {
-    return this.__entities;
+    return this._entities;
   }
 
   loadContent(): void {
-    this.preLoadContent(this.__entities);
+    this.preLoadContent(this._entities);
   }
 
   removeEntity(entity: Entity): void {
-    if (this.__entities.remove(entity)) this.removed(entity);
+    if (this._entities.remove(entity)) this.removed(entity);
   }
 
   addEntity(entity: Entity): void {
-    if (!this.__entities.contains(entity, (a, b) => b && a.id === b.id)) {
-      this.__entities.add(entity);
+    if (!this._entities.contains(entity, (a, b) => b && a.id === b.id)) {
+      this._entities.add(entity);
       this.added(entity);
     }
   }
 
   cleanSystem(): void {
-    this.cleanUp(this.__entities);
-    this.__entities.clear();
+    this.cleanUp(this._entities);
+    this._entities.clear();
   }
 
   processAll(): void {
@@ -56,8 +56,8 @@ export class EntitySystem {
   }
 
   processEntities(): void {
-    this.__entities.forEach((entity: Entity) => {
-      entity && this.process(entity, this.__ecsInstance.delta);
+    this._entities.forEach((entity: Entity) => {
+      entity && this.process(entity, this._ecsInstance.delta);
     });
   }
 

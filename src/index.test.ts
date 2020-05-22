@@ -38,7 +38,7 @@ describe('Library', () => {
     });
     it('ComponentMapper should be importable and instantiable', () => {
       class Comp extends Component { };
-      const cm = new ComponentMapper(new Comp(), new EcsInstance());
+      const cm = new ComponentMapper(Comp, new EcsInstance());
       expect(cm).toBeDefined();
     });
     it('Entity should be importable and instantiable', () => {
@@ -51,24 +51,6 @@ describe('Library', () => {
     });
     it('EntitySystem should be importable and instantiable', () => {
       class Foo extends EntitySystem {
-        initialize(): void {
-        }
-        preLoadContent(_entities: Bag<Entity>): void {
-        }
-        removed(entity: Entity): void {
-        }
-        added(entity: Entity): void {
-        }
-        updated(entity: Entity): void {
-        }
-        cleanUp(entities: Bag<Entity>): void {
-        }
-        begin(): void {
-        }
-        end(): void {
-        }
-        process(entity: Entity, delta: number): void {
-        }
       }
       const foo = new Foo();
       expect(foo).toBeDefined();
