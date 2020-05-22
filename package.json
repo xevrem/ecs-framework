@@ -2,12 +2,10 @@
   "name": "ecsf",
   "version": "0.1.1",
   "description": "Entity Component System Framework for JavaScript",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "scripts": {
     "test": "jest --watch",
-    "watch": "tsc --watch --noEmit",
-    "build": "tsc"
+    "watch": "tsc --watch --noEmit"
   },
   "repository": {
     "type": "git",
