@@ -7,8 +7,8 @@ export class ComponentMapper{
   private _type: number;
   private _ecsInstance: EcsInstance;
 
-  constructor(component: typeof Component, ecsInstance: EcsInstance) {
-    this._type = component.type;
+  constructor(type: number, ecsInstance: EcsInstance) {
+    this._type = type;
     this._ecsInstance = ecsInstance;
   }
 
@@ -18,7 +18,7 @@ export class ComponentMapper{
       .get(entity.id);
   }
 
-  static get(component: typeof Component, entity: Entity, ecsInstance: EcsInstance): Component {
-    return ecsInstance.componentManager.components.get(component.type).get(entity.id);
+  static get(type: number, entity: Entity, ecsInstance: EcsInstance): Component {
+    return ecsInstance.componentManager.components.get(type).get(entity.id);
   }
 }
