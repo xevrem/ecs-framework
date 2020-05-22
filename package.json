@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "description": "Entity Component System Framework for JavaScript",
   "main": "dist/index.js",
-  "typings": "dist/index",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --watch",
     "watch": "tsc --watch --noEmit",
