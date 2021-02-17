@@ -3,9 +3,11 @@
   "version": "0.1.1",
   "description": "Entity Component System Framework for JavaScript",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --watch",
-    "build": "parcel build src/index.js"
+    "watch": "tsc --watch --noEmit",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -21,23 +23,17 @@
     "@babel/core": "^7.6.4",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.6.3",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "babel-plugin-module-resolver": "^3.2.0",
-    "eslint": "^6.5.1",
+    "eslint": "^7.0.0",
     "jest": "^24.9.0",
-    "parcel": "^1.12.4"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    }
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.3"
   },
   "moduleRoots": [
     "src"
