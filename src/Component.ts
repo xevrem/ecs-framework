@@ -2,7 +2,7 @@ export class Component {
   owner: number = -1;
 
   static type: number = -1;
-  get type() {
+  get type(): number {
     let inst = this.constructor as typeof Component;
     return inst.type;
   }
@@ -11,3 +11,4 @@ export class Component {
     inst.type = value;
   }
 }
+

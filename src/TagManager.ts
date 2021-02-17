@@ -1,7 +1,7 @@
 import { Entity } from './Entity';
 
 interface Tags {
-  [key: string]: Entity
+  [key: string]: Entity;
 }
 
 export class TagManager {
@@ -15,15 +15,18 @@ export class TagManager {
     this.__tags[tag] = entity;
   }
 
-  // refresh(entity: Entity) {}
-
   deleteEntity(entity: Entity): void {
     Object.keys(this.__tags).forEach(key => {
-      if (this.__tags[key] === entity) delete this.__tags[key];
+      if (this.__tags[key].id === entity.id) delete this.__tags[key];
     });
+  }
+
+  removeTag(tag: string) {
+    delete this.__tags[tag];
   }
 
   cleanUp(): void {
     this.__tags = {};
   }
 }
+

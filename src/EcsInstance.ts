@@ -5,6 +5,7 @@ import { TagManager } from './TagManager';
 import { GroupManager } from './GroupManager';
 import { Entity } from './Entity';
 import { Component } from './Component';
+import { ComponentMapper } from './ComponentMapper';
 
 export class EcsInstance {
   entityManager: EntityManager;
@@ -56,6 +57,10 @@ export class EcsInstance {
     return this.componentManager.hasComponent(entity, type);
   }
 
+  makeMapper(component: Component): ComponentMapper {
+    return new ComponentMapper(component, this);
+  }
+
   resolve(entity: Entity): void {
     if (entity) this.__updating.push(entity);
   }
@@ -102,3 +107,4 @@ export class EcsInstance {
     this.tagManager.cleanUp();
   }
 }
+

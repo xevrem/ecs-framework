@@ -19,20 +19,36 @@ export class Bag<T> {
     return this.__count;
   }
 
-  forEach(args: (item: T, index: number, array: Array<T>) => void, context?: Bag<T>): void {
+  forEach(
+    args: (item: T, index: number, array: Array<T>) => void,
+    context?: Bag<T>
+  ): void {
     return this.__data.forEach(args, context);
   }
 
-  map(args: (item: T, index: number, array: Array<T>) => T, context?: Bag<T>): Array<T> {
+  map(
+    args: (item: T, index: number, array: Array<T>) => T,
+    context?: Bag<T>
+  ): Array<T> {
     return this.__data.map(args, context);
   }
 
-  filter(args: (item: T, index: number, array: Array<T>) => boolean, context?: Bag<T>): Array<T> {
+  filter(
+    args: (item: T, index: number, array: Array<T>) => boolean,
+    context?: Bag<T>
+  ): Array<T> {
     return this.__data.filter(args, context);
   }
 
-  reduce(args: (acc: any, item: T, index: number, array: Array<T>) => any, init: any): any {
+  reduce(
+    args: (acc: any, item: T, index: number, array: Array<T>) => any,
+    init: any
+  ): any {
     return this.__data.reduce(args, init);
+  }
+
+  slice(start?: number, end?: number): Array<T> {
+    return this.__data.slice(start, end);
   }
 
   get(index: number): T {

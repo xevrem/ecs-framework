@@ -22,3 +22,4 @@ export class ComponentMapper {
     return ecsInstance.componentManager.components.get(component.type).get(entity.id);
   }
 }
+

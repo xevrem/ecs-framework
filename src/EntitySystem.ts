@@ -76,3 +76,4 @@ export class EntitySystem {
   end(): void { };
   process(_entity: Entity, _delta: number): void { };
 }
+

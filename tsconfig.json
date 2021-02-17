@@ -1,9 +1,9 @@
 {
   "compilerOptions" : {
-    "target": "es2017",
+    "target": "ES6",
+    "lib": ["ESNext"],
     "allowJs": false,
     "sourceMap": true,
-    "removeComments": false,
     "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
@@ -11,17 +11,18 @@
     "noImplicitReturns": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
+    "module": "ESNext",
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
     "outDir": "./dist",
-    "baseUrl": "./src"
+    "baseUrl": "src"
   },
   "include": [
-    "./src/**/*"
+    "src"
   ],
   "exclude": [
-    "./src/**/*.test.ts",
-    "node_modules"
+    "node_modules",
+    "**/.*/"
   ]
 }

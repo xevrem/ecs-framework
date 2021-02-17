@@ -40,7 +40,7 @@ export class SystemManager {
     this.__systems.forEach(system => {
       valid = true;
       system.componentTypes.forEach(type => {
-        valid = valid && this.__ecsInstance.hasComponent(entity, type);
+        valid = this.__ecsInstance.hasComponent(entity, type) && valid;
       });
       if (valid) {
         system.addEntity(entity);
@@ -60,3 +60,4 @@ export class SystemManager {
     this.__systems = [];
   }
 }
+
