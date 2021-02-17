@@ -1,7 +1,7 @@
 {
   "compilerOptions" : {
     "target": "ES6",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "allowJs": false,
     "sourceMap": true,
     "strict": true,
@@ -23,6 +23,7 @@
   ],
   "exclude": [
     "node_modules",
-    "**/.*/"
+    "**/.*/",
+    "**/**/*.test.ts"
   ]
 }

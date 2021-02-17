@@ -25,3 +25,4 @@ describe('ComponentMapper', ()=>{
     expect(ComponentMapper.get(Foo, new Entity(), ecs)).toBeUndefined();
   });
 });
+
