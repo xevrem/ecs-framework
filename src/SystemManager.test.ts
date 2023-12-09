@@ -2,8 +2,7 @@ import { EcsInstance } from './EcsInstance';
 import { SystemManager } from './SystemManager';
 import ecsRig from './EcsRig';
 import { Bag } from './Bag';
-import { RootReducer } from 'types/modules';
-import { SmartResolve } from 'types/ecs';
+import type { SmartResolve } from './types/tuples';
 
 describe('SystemManager', () => {
   it('should instantiate without crashing', () => {
@@ -12,7 +11,7 @@ describe('SystemManager', () => {
   });
 
   it('should be able to register systems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({
           needed: [],
@@ -25,7 +24,7 @@ describe('SystemManager', () => {
   });
 
   it('should initializeSystems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({ needed: [] }),
         {}
@@ -37,7 +36,7 @@ describe('SystemManager', () => {
   });
 
   it('should systemsLoadContent', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({ needed: [] }),
         {}
@@ -49,7 +48,7 @@ describe('SystemManager', () => {
   });
 
   it('should resolve entities for static systems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({ needed: [Foo] }),
@@ -70,7 +69,7 @@ describe('SystemManager', () => {
   });
 
   it("should not resolve entities for components it doesn't want", () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const OtherComp = rig.makeComponentType();
       const system = rig.ecs.systemManager.registerSystem(
@@ -96,16 +95,14 @@ describe('SystemManager', () => {
   });
 
   it('should resolve entities for reactive systems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
-      const system = rig.ecs.systemManager.registerSystem(
-        rig.makeSystemType({
-          needed: [Foo],
-        }),
-        {
-          reactive: true,
-        }
-      );
+      const Sys = rig.makeSystemType({
+        needed: [Foo],
+      });
+      const system = rig.ecs.registerSystem(Sys, {
+        reactive: true,
+      } as any);
       const entity = rig.ecs.createEntity();
       const comp = new Foo();
       rig.ecs.addComponent(entity, comp);
@@ -113,7 +110,7 @@ describe('SystemManager', () => {
       rig.ecs.resolveEntities();
       expect(system.entities.count).toEqual(1);
       rig.ecs.scheduleSystems();
-      rig.ecs.runSystems({} as RootReducer);
+      rig.ecs.runSystems();
       expect(system.entities.count).toEqual(0);
       rig.ecs.update(comp);
       rig.ecs.resolveEntities();
@@ -122,7 +119,7 @@ describe('SystemManager', () => {
   });
 
   it('should delete an entity', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({
@@ -144,12 +141,12 @@ describe('SystemManager', () => {
   });
 
   it('should cleanUp', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({
           needed: [Foo],
-        }),
+        }) as any,
         {}
       );
       expect(rig.ecs.systemManager.systems.length).toEqual(1);

@@ -17,11 +17,11 @@ describe('Scheduler', () => {
       });
       const sysA = rig.ecs.systemManager.registerSystem(SysA, {
         priority: 2,
-      });
+      } as any);
       const sysB = rig.ecs.systemManager.registerSystem(SysB, {
         priority: 1,
         reactive: true,
-      });
+      } as any);
       rig.ecs.scheduleSystems();
       expect(rig.ecs.scheduler.systems[1]).toEqual(sysB);
       expect(rig.ecs.scheduler.systems[0]).toEqual(sysA);
@@ -39,11 +39,11 @@ describe('Scheduler', () => {
       });
       const sysA = rig.ecs.systemManager.registerSystem(SysA, {
         priority: 2,
-      });
+      } as any);
       const sysB = rig.ecs.systemManager.registerSystem(SysB, {
         priority: 1,
         reactive: true,
-      });
+      } as any);
       rig.ecs.scheduleSystems();
       const entity = rig.ecs.createEntity();
       const foo = new Foo();

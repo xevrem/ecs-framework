@@ -8,29 +8,13 @@ import type {
   JoinedResult,
   SmartUpdate,
 } from 'types/tuples';
-
-export declare type EntitySystemArgs<
-  T extends ComponentTuple = ComponentTuple,
-  Props extends Record<PropertyKey, any> = Record<PropertyKey, any>,
-  V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple
-> = {
-  id: number;
-  ecsInstance: EcsInstance;
-  reactive: Option<boolean>;
-  priority: number;
-  needed: [...T];
-  optional: [...V];
-  unwanted: [...W];
-} & {
-  [Key in keyof Props]: Props[Key];
-};
+import { EntitySystemArgs } from 'types/system';
 
 export class EntitySystem<
-  T extends ComponentTuple = ComponentTuple,
-  Props extends Record<PropertyKey, any> = Record<PropertyKey, any>,
-  V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple
+  T extends ComponentTuple = any,
+  Props = any,
+  V extends ComponentOptionTuple = any,
+  W extends ComponentTuple = any
 > {
   private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();
@@ -52,8 +36,8 @@ export class EntitySystem<
     this.reactive = props.reactive || false;
     this._priority = props.priority || 0;
     this.needed = props.needed;
-    this.optional = props.optional || [] as any;
-    this.unwanted = props.unwanted || [] as any;
+    this.optional = props.optional || ([] as any);
+    this.unwanted = props.unwanted || ([] as any);
   }
 
   get id(): number {
@@ -126,8 +110,8 @@ export class EntitySystem<
     this._query = new Query<T, V, W>({
       ecsInstance: this._ecsInstance,
       needed: this.needed,
-      unwanted: this.unwanted || [] as any,
-      optional: this.optional || [] as any,
+      unwanted: this.unwanted || ([] as any),
+      optional: this.optional || ([] as any),
     });
   }
 

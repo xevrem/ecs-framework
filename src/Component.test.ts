@@ -1,5 +1,4 @@
 import { Component } from './Component';
-import { EcsInstance } from './EcsInstance';
 
 describe('Component', () => {
   class Bar extends Component {

@@ -6,8 +6,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --watch",
-    "watch": "tsc --watch --noEmit",
-    "build": "tsc"
+    "watch": "tsc --watch --noEmit --pretty",
+    "build:pre": "rm -rf build;rm -rf dist;mkdir -p build;cp -r src/types build/types",
+    "build:source": "esbuild src/index.ts --bundle --sourcemap --platform=browser --outfile=build/index.js",
+    "build:types": "tsc --declaration --declarationMap --emitDeclarationOnly",
+    "build:post": "rm build/*.test.*;mv build/*.d.* build/types;mv build dist",
+    "build": "npm run build:pre;npm run build:source;npm run build:types;npm run build:post"
   },
   "repository": {
     "type": "git",
@@ -20,18 +24,14 @@
   },
   "homepage": "https://github.com/xevrem/ecs-framework",
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "^7.23.5",
-    "@babel/preset-typescript": "^7.23.3",
-    "@types/jest": "^29.4.0",
-    "@types/lodash": "^4.14.191",
+    "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
-    "babel-plugin-module-resolver": "^5.0.0",
-    "esbuild": "^0.17.10",
+    "esbuild": "^0.17.19",
     "eslint": "^8.49.0",
-    "jest": "^29.4.3",
+    "jest": "^29.7.0",
     "prettier": "^2.8.4",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
   }
 }

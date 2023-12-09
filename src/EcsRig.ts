@@ -1,22 +1,42 @@
+import { EntitySystemArgs } from 'types/system';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
-import { EntitySystem, EntitySystemArgs } from './EntitySystem';
+import { EntitySystem } from './EntitySystem';
 import { Query } from './Query';
+import type { ComponentOptionTuple, ComponentTuple } from 'types/tuples';
 
 class Bar extends Component {
   [x: string]: number;
 }
 
+type SystemQuery<
+  T extends ComponentTuple,
+  V extends ComponentOptionTuple,
+  W extends ComponentTuple
+> = {
+  needed: [...T];
+  optional?: [...V];
+  unwanted?: [...W];
+};
+
 export declare interface EcsRig {
   ecs: EcsInstance;
   makeComponentType: () => typeof Bar;
-  makeSystemType: (queries: {
-    needed?: (typeof Component)[];
-    optional?: (typeof Component)[];
-    unwanted?: (typeof Component)[];
-  }) => new (props: EntitySystemArgs) => EntitySystem;
+  makeSystemType: <
+    T extends ComponentTuple,
+    Props extends Record<PropertyKey, any>,
+    V extends ComponentOptionTuple,
+    W extends ComponentTuple
+  >(
+    queries: SystemQuery<T, V, W>
+  ) => new (props: EntitySystemArgs<T, Props, V, W>) => EntitySystem<
+    T,
+    Props,
+    V,
+    W
+  >;
 }
 
 export declare type EcsRigCallback = (rig: EcsRig) => void;
@@ -24,16 +44,26 @@ export declare type EcsRigCallback = (rig: EcsRig) => void;
 export default function ecsRig(callback: EcsRigCallback): void {
   const rig: EcsRig = {
     ecs: new EcsInstance(),
-    makeComponentType: (): typeof Bar => {
+    makeComponentType: () => {
       return class Foo extends Bar {};
     },
-    makeSystemType: ({ needed = [], optional = [], unwanted = [] } = {}): new (
-      props: EntitySystemArgs
-    ) => EntitySystem => {
-      class Sys extends EntitySystem {
-        needed = needed;
-        optional = optional;
-        unwanted = unwanted;
+    makeSystemType: <
+      T extends ComponentTuple,
+      Props extends Record<PropertyKey, any>,
+      V extends ComponentOptionTuple,
+      W extends ComponentTuple
+    >(
+      query: SystemQuery<T, V, W>
+    ): new (props: EntitySystemArgs<T, Props, V, W>) => EntitySystem<
+      T,
+      Props,
+      V,
+      W
+    > => {
+      class Sys extends EntitySystem<T, Props, V, W> {
+        needed = query.needed;
+        optional = query.optional || ([] as V);
+        unwanted = query.unwanted || ([] as W);
         initialize(): void {}
         load(_entities: Bag<Entity>): void {}
         created(_entity: Entity): void {}

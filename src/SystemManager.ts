@@ -1,17 +1,14 @@
 import { EcsInstance } from './EcsInstance';
-import { EntitySystem, EntitySystemArgs } from './EntitySystem';
+import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import type { SmartResolve, SmartUpdate } from 'types/tuples';
-
-export declare type SystemRegistrationArgs<
-  Props extends Record<PropertyKey, any> = {}
-> = {
-  reactive?: boolean;
-  priority?: number;
-} & {
-  [Key in keyof Props]: Props[Key];
-};
+import type {
+  ComponentOptionTuple,
+  ComponentTuple,
+  SmartResolve,
+  SmartUpdate,
+} from 'types/tuples';
+import { EntitySystemArgs, SystemRegistrationArgs } from 'types/system';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
@@ -57,17 +54,23 @@ export class SystemManager {
    * @returns a reference to the registered system
    */
   registerSystem<
-    T extends EntitySystem<any, Props, any, any>,
-    Props extends Record<PropertyKey, any>,
-    Args extends EntitySystemArgs<any, Props, any, any>
-  >(System: new (props: Args) => T, args: SystemRegistrationArgs<Props>): T {
+    T extends ComponentTuple,
+    V extends ComponentOptionTuple,
+    W extends ComponentTuple,
+    Props,
+    Sys extends typeof EntitySystem<T, Props, V, W>,
+    Args extends EntitySystemArgs<T, Props, V, W>
+  >(
+    System: Sys,
+    args: SystemRegistrationArgs<Props>
+  ): EntitySystem<T, Props, V, W> {
     const props = {
       id: this._nextId++,
       ecsInstance: this._ecsInstance,
       reactive: false,
       priority: 0,
       ...args,
-    };
+    } as Args;
     const system = new System(props);
 
     system.buildQuery();

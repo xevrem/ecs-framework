@@ -40,7 +40,12 @@ describe('Library', () => {
     it('EntitySystem should be importable and instantiable', () => {
       const ecs = new EcsInstance();
       class Foo extends EntitySystem {}
-      const foo = new Foo({ id: 1, priority: 1, ecsInstance: ecs });
+      const foo = new Foo({
+        id: 1,
+        priority: 1,
+        ecsInstance: ecs,
+        needed: [],
+      });
       expect(foo).toBeDefined();
     });
     it('GroupManager should be importable and instantiable', () => {

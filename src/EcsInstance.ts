@@ -1,11 +1,11 @@
 import { EntityManager } from './EntityManager';
 import { ComponentManager } from './ComponentManager';
-import { SystemManager, SystemRegistrationArgs } from './SystemManager';
+import { SystemManager } from './SystemManager';
 import { TagManager } from './TagManager';
 import { GroupManager } from './GroupManager';
 import { ComponentMapper } from './ComponentMapper';
 import { Scheduler } from './Scheduler';
-import { EntitySystem, EntitySystemArgs } from './EntitySystem';
+import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
@@ -24,6 +24,7 @@ import type {
 } from 'types/tuples';
 import type { EntityBuilder } from 'types/builder';
 import type { QueryFunc } from 'types/query';
+import type { SystemRegistrationArgs } from 'types/system';
 
 const timer = makeTimer(1);
 
@@ -337,11 +338,16 @@ export class EcsInstance {
   }
 
   registerSystem<
-    T extends EntitySystem<any, Props, any, any>,
-    Props extends Record<PropertyKey, any> = {},
-    Args extends EntitySystemArgs<any, Props, any, any> = any
-  >(System: new (props: Args) => T, args: SystemRegistrationArgs<Props>): T {
-    return this.systemManager.registerSystem<T, Props, Args>(System, args);
+    T extends ComponentTuple,
+    V extends ComponentOptionTuple,
+    W extends ComponentTuple,
+    Props,
+    Sys extends typeof EntitySystem<T, Props, V, W>
+  >(
+    System: Sys,
+    args: SystemRegistrationArgs<Props>
+  ): EntitySystem<T, Props, V, W> {
+    return this.systemManager.registerSystem(System, args);
   }
 
   /**
