@@ -1,9 +1,9 @@
 {
   "name": "ecsf",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Entity Component System Framework for JavaScript",
   "main": "dist/index.js",
-  "types": "dist/types",
+  "types": "dist",
   "scripts": {
     "test": "jest --watch",
     "watch": "tsc --watch --noEmit --pretty",
