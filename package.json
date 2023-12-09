@@ -1,6 +1,6 @@
 {
   "name": "ecsf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Entity Component System Framework for JavaScript",
   "main": "dist/index.js",
   "types": "dist/types",
@@ -10,7 +10,7 @@
     "build:pre": "rm -rf build;rm -rf dist;mkdir -p build;cp -r src/types build/types",
     "build:source": "esbuild src/index.ts --bundle --sourcemap --platform=browser --outfile=build/index.js",
     "build:types": "tsc --declaration --declarationMap --emitDeclarationOnly",
-    "build:post": "rm build/*.test.*;mv build/*.d.* build/types;mv build dist",
+    "build:post": "rm build/*.test.*;mv build dist",
     "build": "npm run build:pre;npm run build:source;npm run build:types;npm run build:post"
   },
   "repository": {
