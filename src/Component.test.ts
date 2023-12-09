@@ -1,7 +1,11 @@
-import { Component } from "./Component";
+import { Component } from './Component';
+import { EcsInstance } from './EcsInstance';
 
 describe('Component', () => {
-  class Bar extends Component {  }
+  class Bar extends Component {
+    foo = 1;
+    bar = 'baz';
+  }
 
   it('should instantiate without crashing', () => {
     const component = new Bar();
@@ -30,12 +34,24 @@ describe('Component', () => {
     expect(component.type).toEqual(5);
   });
 
+  it('should be able to get data fields', () => {
+    const component = new Bar();
+    expect(component.foo).toEqual(1);
+    expect(component.bar).toEqual('baz');
+  });
+
   describe('extendability', () => {
-    class Foo extends Component { };
+    class Foo extends Component {
+      foo = 42;
+    }
+    class Bar extends Component {
+      bar = 'baz';
+    }
 
     beforeEach(() => {
       Component.type = -1;
       Foo.type = -1;
+      Bar.type = -1;
     });
 
     it('should be extendable', () => {
@@ -53,23 +69,32 @@ describe('Component', () => {
     });
 
     it('should have different instance types from Component', () => {
-      Component.type = 5;
+      Bar.type = 5;
       Foo.type = 3;
-      const comp = new Component();
+      const bar = new Bar();
       const foo = new Foo();
-      expect(comp.type).toEqual(5);
+      expect(bar.type).toEqual(5);
+      expect(bar.type).not.toEqual(Component.type);
       expect(foo.type).toEqual(3);
+      expect(foo.type).not.toEqual(Component.type);
+    });
+
+    it('should have different data', () => {
+      const bar = new Bar();
+      const foo = new Foo();
+      expect(bar.bar).toBeDefined();
+      expect(foo).not.toHaveProperty('bar');
+      expect(foo.foo).toBeDefined();
+      expect(bar).not.toHaveProperty('foo');
     });
   });
 
-  describe('ownership', ()=> {
-    class Foo extends Component { };
+  describe('ownership', () => {
+    class Foo extends Component {}
 
-    it('should have an owner', ()=>{
-      let foo = new Foo();
-      expect(foo).not.toBeNull()
+    it('should have an owner', () => {
+      const foo = new Foo();
+      expect(foo.owner).not.toBeNull();
     });
   });
-
 });
-

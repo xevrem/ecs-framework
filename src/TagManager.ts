@@ -1,32 +1,52 @@
 import { Entity } from './Entity';
 
-interface Tags {
-  [key: string]: Entity;
-}
-
 export class TagManager {
-  private __tags: Tags = {};
+  private _tags: Record<string, Entity> = {};
 
-  getEntityByTag(tag: string): Entity {
-    return this.__tags[tag];
+  /**
+   * gets the entity assigned to the given tag
+   * @param tag the tag to retrieve
+   * @returns the entity if tagged, otherwise `undefined`
+   */
+  getEntityByTag(tag: string): Entity | undefined {
+    return this._tags[tag];
   }
 
+  /**
+   * tags an entity
+   * @param tag the tag to use
+   * @param entity the entity to tag
+   */
   tagEntity(tag: string, entity: Entity): void {
-    this.__tags[tag] = entity;
+    this._tags[tag] = entity;
   }
 
+  tagExists(tag: string): boolean {
+    return Object.hasOwn(this._tags, tag);
+  }
+
+  /**
+   * delete the given entity from all tags
+   * @param entity the entity to delete
+   */
   deleteEntity(entity: Entity): void {
-    Object.keys(this.__tags).forEach(key => {
-      if (this.__tags[key].id === entity.id) delete this.__tags[key];
+    Object.keys(this._tags).forEach((key) => {
+      if (this._tags[key].id === entity.id) delete this._tags[key];
     });
   }
 
-  removeTag(tag: string) {
-    delete this.__tags[tag];
+  /**
+   * remove the given tag
+   * @param tag the tag to remove
+   */
+  removeTag(tag: string): void {
+    delete this._tags[tag];
   }
 
+  /**
+   * clean up all tags
+   */
   cleanUp(): void {
-    this.__tags = {};
+    this._tags = {};
   }
 }
-
