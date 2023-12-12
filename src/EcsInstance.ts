@@ -340,11 +340,11 @@ export class EcsInstance {
   }
 
   registerSystem<
-    T extends ComponentTuple,
-    V extends ComponentOptionTuple,
-    W extends ComponentTuple,
-    Props,
-    Sys extends typeof EntitySystem<T, Props, V, W>
+    T extends ComponentTuple = any,
+    V extends ComponentOptionTuple = any,
+    W extends ComponentTuple = any,
+    Props = any,
+    Sys extends typeof EntitySystem<T, Props, V, W> = any
   >(
     System: Sys,
     args: SystemRegistrationArgs<Props>
