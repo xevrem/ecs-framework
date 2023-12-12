@@ -1,4 +1,4 @@
-import { EcsInstance } from 'EcsInstance';
+import { EcsInstance } from '../EcsInstance';
 import { Option } from './common';
 import { ComponentOptionTuple, ComponentTuple } from './tuples';
 

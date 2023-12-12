@@ -1,6 +1,9 @@
 import { Entity } from './Entity';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
+/**
+ * @deprecated
+ */
 export declare class ComponentMapper<T extends Component> {
     private _type;
     private _ecsInstance;

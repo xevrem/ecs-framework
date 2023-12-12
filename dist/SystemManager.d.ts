@@ -2,7 +2,7 @@ import { EcsInstance } from './EcsInstance';
 import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import { ComponentOptionTuple, ComponentTuple, SmartResolve, SmartUpdate, EntitySystemArgs, SystemRegistrationArgs } from 'types';
+import { ComponentOptionTuple, ComponentTuple, SmartResolve, SmartUpdate, EntitySystemArgs, SystemRegistrationArgs } from './types';
 export declare class SystemManager {
     private _ecsInstance;
     private _staticSystems;

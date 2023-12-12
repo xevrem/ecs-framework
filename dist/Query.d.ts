@@ -2,7 +2,7 @@ import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Component } from './Component';
 import { Entity } from './Entity';
-import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedQuery, JoinedResult } from 'types';
+import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedQuery, JoinedResult } from './types';
 export declare interface QueryArgs<T extends ComponentTuple = ComponentTuple, V extends ComponentOptionTuple = ComponentOptionTuple, W extends ComponentTuple = ComponentTuple> {
     ecsInstance: EcsInstance;
     needed: [...T];

@@ -1,4 +1,4 @@
-import { Option } from "types";
+import { Option } from "./types";
 export declare class Bag<T> {
     private _data;
     private _length;

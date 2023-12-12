@@ -10,7 +10,7 @@ import { Bag } from './Bag';
 import { FuncQuery } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component } from './Component';
-import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, SystemRegistrationArgs, Option } from 'types';
+import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, SystemRegistrationArgs, Option } from './types';
 export declare class EcsInstance {
     entityManager: EntityManager;
     componentManager: ComponentManager;
@@ -157,6 +157,7 @@ export declare class EcsInstance {
     loadSystems(): void;
     /**
      * makes a component mapper for the specific component type
+     * @deprecated
      * @param component a component type to use to build the mapper
      * @return a component mapper for the given component type
      */

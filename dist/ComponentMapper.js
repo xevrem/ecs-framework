@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 export class ComponentMapper {
     constructor(component, ecsInstance) {
         this._type = new component().type;

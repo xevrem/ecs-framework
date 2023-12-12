@@ -1,5 +1,5 @@
 import { EcsInstance } from './EcsInstance';
-import { ComponentTuple, OrderedComponentTuple } from 'types';
+import { ComponentTuple, OrderedComponentTuple } from './types';
 export declare class FuncQuery<T extends ComponentTuple> {
     ecs: EcsInstance;
     data: [...T];

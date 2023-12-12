@@ -2,7 +2,7 @@ import { Bag } from './Bag';
 import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
 import { Query } from './Query';
-import { ComponentOptionTuple, ComponentTuple, JoinedResult, SmartUpdate, EntitySystemArgs } from 'types';
+import { ComponentOptionTuple, ComponentTuple, JoinedResult, SmartUpdate, EntitySystemArgs } from './types';
 export declare class EntitySystem<T extends ComponentTuple = any, Props = any, V extends ComponentOptionTuple = any, W extends ComponentTuple = any> {
     private _id;
     private _entities;

@@ -1,5 +1,5 @@
 import { EcsInstance } from './EcsInstance';
-import { EntityBuilder } from 'types';
+import { EntityBuilder } from './types';
 /**
  * creates a builder that allows you to chain calls to build up an entity
  * making creation of entities extremely easy while remaining lightweight
