@@ -14,4 +14,5 @@ export * from './TagManager';
 export * from './Query';
 export * from './Scheduler';
 export * from './utils';
+export type * from './types';
 //# sourceMappingURL=index.d.ts.map
