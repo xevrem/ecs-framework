@@ -1,5 +1,5 @@
-import type { EcsInstance } from './EcsInstance';
-import type { ComponentTuple, OrderedComponentTuple } from 'types/tuples';
+import { EcsInstance } from './EcsInstance';
+import { ComponentTuple, OrderedComponentTuple } from 'types';
 
 // export declare type VariadricQuery<T extends ComponentTuple> = [...T];
 

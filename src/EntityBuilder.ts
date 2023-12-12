@@ -3,13 +3,15 @@ import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
-import type {
+import {
   ComponentBuilderFunction,
   ComponentMaybeBuilderFunction,
   DataBuilderFunction,
   EntityBuilder,
   StringBuilderFunction,
-} from 'types/builder';
+  Option,
+  Result,
+} from 'types';
 
 /**
  * creates a builder that allows you to chain calls to build up an entity

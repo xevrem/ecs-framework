@@ -12,7 +12,7 @@ import { FuncQuery } from './FuncQuery';
 import { is_none, makeTimer } from './utils';
 import { Entity } from './Entity';
 import { Component } from './Component';
-import type {
+import {
   ComponentOptionTuple,
   ComponentTuple,
   JoinedData,
@@ -21,10 +21,11 @@ import type {
   OrderedComponentTuple,
   SmartResolve,
   SmartUpdate,
-} from 'types/tuples';
-import type { EntityBuilder } from 'types/builder';
-import type { QueryFunc } from 'types/query';
-import type { SystemRegistrationArgs } from 'types/system';
+  EntityBuilder,
+  QueryFunc,
+  SystemRegistrationArgs,
+  Option,
+} from 'types';
 
 const timer = makeTimer(1);
 

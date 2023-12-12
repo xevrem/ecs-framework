@@ -1,3 +1,4 @@
+import { Option } from 'types';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 

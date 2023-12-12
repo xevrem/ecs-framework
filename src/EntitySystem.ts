@@ -2,13 +2,13 @@ import { Bag } from './Bag';
 import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
 import { Query } from './Query';
-import type {
+import {
   ComponentOptionTuple,
   ComponentTuple,
   JoinedResult,
   SmartUpdate,
-} from 'types/tuples';
-import { EntitySystemArgs } from 'types/system';
+  EntitySystemArgs,
+} from 'types';
 
 export class EntitySystem<
   T extends ComponentTuple = any,

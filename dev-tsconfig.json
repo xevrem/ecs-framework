@@ -3,23 +3,23 @@
     "target": "es2020",
     "lib": ["esnext", "dom", "dom.iterable"],
     "allowJs": false,
-    "sourceMap": true,
+    "noEmit": true,
     "strict": true,
+    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "system",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
-    "rootDir": "src"
+    "outFile": "dist/index.ts",
+    "baseUrl": "src"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/**/*.d.ts"
   ],
   "exclude": ["node_modules/**/*"]
 }

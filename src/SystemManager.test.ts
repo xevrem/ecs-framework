@@ -2,7 +2,7 @@ import { EcsInstance } from './EcsInstance';
 import { SystemManager } from './SystemManager';
 import ecsRig from './EcsRig';
 import { Bag } from './Bag';
-import type { SmartResolve } from './types/tuples';
+import { SmartResolve } from './types';
 
 describe('SystemManager', () => {
   it('should instantiate without crashing', () => {

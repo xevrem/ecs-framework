@@ -1,12 +1,15 @@
 {
   "name": "ecsf",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Entity Component System Framework for JavaScript",
   "source": "src/index.ts",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --build tsconfig.json",
+    "build:clean": "rm -rf dist",
+    "build:source": "tsc --build tsconfig.json",
+    "build:post": "cp -r src/types dist/.",
+    "build": "npm run build:clean;npm run build:source;npm run build:post",
     "check": "tsc --watch --noEmit --pretty -p dev-tsconfig.json",
     "test": "jest --watch"
   },

@@ -2,13 +2,13 @@ import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Component } from './Component';
 import { Entity } from './Entity';
-import type {
+import {
   ComponentOptionTuple,
   ComponentTuple,
   JoinedData,
   JoinedQuery,
   JoinedResult,
-} from 'types/tuples';
+} from 'types';
 
 export declare interface QueryArgs<
   T extends ComponentTuple = ComponentTuple,

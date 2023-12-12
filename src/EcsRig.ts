@@ -1,11 +1,10 @@
-import { EntitySystemArgs } from 'types/system';
+import { ComponentOptionTuple, ComponentTuple, EntitySystemArgs } from 'types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
 import { EntitySystem } from './EntitySystem';
 import { Query } from './Query';
-import type { ComponentOptionTuple, ComponentTuple } from 'types/tuples';
 
 class Bar extends Component {
   [x: string]: number;

@@ -2,13 +2,14 @@ import { EcsInstance } from './EcsInstance';
 import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import type {
+import {
   ComponentOptionTuple,
   ComponentTuple,
   SmartResolve,
   SmartUpdate,
-} from 'types/tuples';
-import { EntitySystemArgs, SystemRegistrationArgs } from 'types/system';
+  EntitySystemArgs,
+  SystemRegistrationArgs,
+} from 'types';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
