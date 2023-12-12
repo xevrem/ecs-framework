@@ -1,4 +1,4 @@
-import { ComponentOptionTuple, ComponentTuple, EntitySystemArgs } from 'types';
+import { ComponentOptionTuple, ComponentTuple, EntitySystemArgs } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';

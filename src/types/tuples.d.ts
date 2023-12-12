@@ -1,5 +1,5 @@
-import { Entity } from 'Entity';
-import { Component } from 'Component';
+import { Entity } from '../Entity';
+import { Component } from '../Component';
 import { InstanceOf, None, Option, Some } from './common';
 import { ComponentOptionTypes, ComponentTypes } from './components';
 

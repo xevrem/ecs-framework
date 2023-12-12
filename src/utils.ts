@@ -9,7 +9,7 @@ import {
   OrderedSomeTuple,
   Result,
   Some,
-} from 'types';
+} from './types';
 
 export function is_some<T>(val: Option<T>): val is Some<T> {
   if (!!val || typeof val === 'number' || typeof val === 'boolean') return true;

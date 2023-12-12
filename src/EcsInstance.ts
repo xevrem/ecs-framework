@@ -25,7 +25,7 @@ import {
   QueryFunc,
   SystemRegistrationArgs,
   Option,
-} from 'types';
+} from './types';
 
 const timer = makeTimer(1);
 
@@ -323,6 +323,7 @@ export class EcsInstance {
 
   /**
    * makes a component mapper for the specific component type
+   * @deprecated
    * @param component a component type to use to build the mapper
    * @return a component mapper for the given component type
    */

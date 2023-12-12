@@ -1,4 +1,4 @@
-import { Option } from "types";
+import { Option } from "./types";
 
 export class Bag<T> {
   private _data: Array<Option<T>> = [];

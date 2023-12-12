@@ -1,6 +1,6 @@
-import { FuncQuery } from "FuncQuery";
+import { FuncQuery } from "../FuncQuery";
 import { ComponentTuple } from "./tuples";
-import { EcsInstance } from "EcsInstance";
+import { EcsInstance } from "../EcsInstance";
 
 export declare interface QueryFuncParams<T extends ComponentTuple> {
   query: FuncQuery<T>;

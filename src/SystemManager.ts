@@ -9,7 +9,7 @@ import {
   SmartUpdate,
   EntitySystemArgs,
   SystemRegistrationArgs,
-} from 'types';
+} from './types';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;

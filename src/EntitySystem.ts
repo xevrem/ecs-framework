@@ -8,7 +8,7 @@ import {
   JoinedResult,
   SmartUpdate,
   EntitySystemArgs,
-} from 'types';
+} from './types';
 
 export class EntitySystem<
   T extends ComponentTuple = any,

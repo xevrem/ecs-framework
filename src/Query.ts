@@ -8,7 +8,7 @@ import {
   JoinedData,
   JoinedQuery,
   JoinedResult,
-} from 'types';
+} from './types';
 
 export declare interface QueryArgs<
   T extends ComponentTuple = ComponentTuple,

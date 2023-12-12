@@ -11,7 +11,7 @@ import {
   StringBuilderFunction,
   Option,
   Result,
-} from 'types';
+} from './types';
 
 /**
  * creates a builder that allows you to chain calls to build up an entity
