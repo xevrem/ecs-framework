@@ -1,6 +1,6 @@
 {
   "name": "ecsf",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Entity Component System Framework for JavaScript",
   "source": "src/index.ts",
   "module": "dist/index.js",
