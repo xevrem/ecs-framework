@@ -14,4 +14,3 @@ export * from './TagManager';
 export * from './Query';
 export * from './Scheduler';
 export * from './utils';
-export * from './types';
