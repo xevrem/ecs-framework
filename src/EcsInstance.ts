@@ -27,8 +27,6 @@ import {
   Option,
 } from './types';
 
-const timer = makeTimer(1);
-
 export class EcsInstance {
   entityManager: EntityManager;
   componentManager: ComponentManager;
@@ -340,11 +338,16 @@ export class EcsInstance {
   }
 
   registerSystem<
-    T extends ComponentTuple = any,
-    V extends ComponentOptionTuple = any,
-    W extends ComponentTuple = any,
+    T extends ComponentTuple = ComponentTuple,
+    V extends ComponentOptionTuple = ComponentOptionTuple,
+    W extends ComponentTuple = ComponentTuple,
     Props = any,
-    Sys extends typeof EntitySystem<T, Props, V, W> = any
+    Sys extends typeof EntitySystem<T, Props, V, W> = typeof EntitySystem<
+      T,
+      Props,
+      V,
+      W
+    >
   >(
     System: Sys,
     args: SystemRegistrationArgs<Props>
@@ -1113,13 +1116,11 @@ export class EcsInstance {
   runQuerySystems(): void {
     for (let i = 0; i < this.qSysTuple.length; i++) {
       const [func, data] = this.qSysTuple[i];
-      timer.begin();
       func({
         query: new FuncQuery(this, data),
         ecs: this,
         delta: this._delta,
       });
-      timer.end('query system::', [...data]);
     }
   }
 }
