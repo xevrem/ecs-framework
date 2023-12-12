@@ -4,23 +4,22 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "allowJs": false,
     "sourceMap": true,
-    "declarationMap": true,
-    "declaration": true,
     "strict": true,
-    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
-    "module": "system",
+    "module": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
-    "outFile": "dist/index.ts",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "rootDir": "src"
   },
   "include": [
     "src/**/*"
   ],
-  "exclude": ["node_modules/**/*", "src/**/*.test.ts"]
+  "exclude": ["node_modules/**/*"]
 }

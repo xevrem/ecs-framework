@@ -63,9 +63,11 @@ typings/
 # package-lock
 package-lock.json
 
-# parcel related
+# cace related
 .cache
+.parcel-cache
 
-# ts related
+
+# ts build related
 /build
 /src/**/*.test.js

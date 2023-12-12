@@ -1,9 +1,4 @@
-import type {
-  OptionTuple,
-  OrderedNoneTuple,
-  OrderedOptionTuple,
-  OrderedSomeTuple,
-} from 'types/tuples';
+import { OptionTuple, OrderedNoneTuple, OrderedOptionTuple, OrderedSomeTuple } from "types";
 
 export function is_some<T>(val: Option<T>): val is Some<T> {
   if (!!val || typeof val === 'number' || typeof val === 'boolean') return true;

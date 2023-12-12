@@ -5,7 +5,7 @@ import { Entity } from 'Entity';
  * creates an Entity builder that allows you to chain common entity build patterns
  * NOTE: entity is not actually created until `build()` is called on this builder
  */
-export declare type EntityBuilder = {
+declare type EntityBuilder = {
   /**
    *
    */
