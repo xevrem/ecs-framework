@@ -243,7 +243,7 @@ export class EcsInstance {
     registerComponent(component) {
         this.componentManager.registerComponent(component);
     }
-    async registerComponents(components) {
+    registerComponents(components) {
         Object.values(components).forEach(value => {
             if (isComponent(value)) {
                 this.registerComponent(value);
