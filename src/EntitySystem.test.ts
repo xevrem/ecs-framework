@@ -1,5 +1,5 @@
 /*eslint no-empty-function: off*/
-import { EntitySystemArgs } from 'types';
+import { EntitySystemArgs } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import ecsRig from './EcsRig';
