@@ -6,9 +6,9 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build:clean": "rm -rf dist",
-    "build:source": "tsc --build tsconfig.json",
-    "build:post": "cp -r src/types dist/.",
+    "build:clean": "rm -rf dist;mkdir dist",
+    "build:source": "tsc --build ./build-tsconfig.json",
+    "build:post": "cp -r ./src/types dist/.",
     "build": "npm run build:clean;npm run build:source;npm run build:post",
     "check": "tsc --watch --noEmit --pretty -p dev-tsconfig.json",
     "test": "jest --watch"

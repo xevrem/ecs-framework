@@ -2,12 +2,10 @@ import { EcsInstance } from '../EcsInstance';
 import { Option } from './common';
 import { ComponentOptionTuple, ComponentTuple } from './tuples';
 
-export declare type SystemRegistrationArgs<Props = any> = {
+export declare type SystemRegistrationArgs = {
   reactive?: Option<boolean>;
   priority?: Option<number>;
-} & {
-  [Key in keyof Props]: Props[Key];
-};
+}; 
 
 export declare type EntitySystemArgs<
   T extends ComponentTuple = ComponentTuple,
@@ -17,11 +15,9 @@ export declare type EntitySystemArgs<
 > = {
   id: number;
   ecsInstance: EcsInstance;
-  reactive?: Option<boolean>;
-  priority?: number;
   needed: [...T];
   optional?: [...V];
   unwanted?: [...W];
-} & {
+} & SystemRegistrationArgs & {
   [Key in keyof Props]: Props[Key];
 };

@@ -9,7 +9,7 @@ import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
-import { is_none, makeTimer } from './utils';
+import { is_none } from './utils';
 import { Entity } from './Entity';
 import { Component } from './Component';
 import {
@@ -23,8 +23,8 @@ import {
   SmartUpdate,
   EntityBuilder,
   QueryFunc,
-  SystemRegistrationArgs,
   Option,
+  EntitySystemArgs,
 } from './types';
 
 export class EcsInstance {
@@ -338,20 +338,12 @@ export class EcsInstance {
   }
 
   registerSystem<
-    T extends ComponentTuple = ComponentTuple,
-    V extends ComponentOptionTuple = ComponentOptionTuple,
-    W extends ComponentTuple = ComponentTuple,
-    Props = any,
-    Sys extends typeof EntitySystem<T, Props, V, W> = typeof EntitySystem<
-      T,
-      Props,
-      V,
-      W
-    >
+    Args, 
+    Sys extends EntitySystem,
   >(
-    System: Sys,
-    args: SystemRegistrationArgs<Props>
-  ): EntitySystem<T, Props, V, W> {
+    System: new(args: Args) => Sys,
+    args: Args
+  ): Sys {
     return this.systemManager.registerSystem(System, args);
   }
 

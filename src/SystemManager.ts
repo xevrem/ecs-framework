@@ -3,20 +3,16 @@ import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 import {
-  ComponentOptionTuple,
-  ComponentTuple,
   SmartResolve,
   SmartUpdate,
-  EntitySystemArgs,
-  SystemRegistrationArgs,
 } from './types';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
-  private _staticSystems: EntitySystem<any, any, any, any>[];
-  private _reactiveSystems: EntitySystem<any, any, any, any>[];
-  private _systemTypes: Record<string, EntitySystem<any, any, any, any>> = {};
-  private _systems!: EntitySystem<any, any, any, any>[];
+  private _staticSystems: EntitySystem[];
+  private _reactiveSystems: EntitySystem[];
+  private _systemTypes: Record<string, EntitySystem> = {};
+  private _systems!: EntitySystem[];
   private _nextId: number;
 
   constructor(ecsInstance: EcsInstance) {
@@ -30,7 +26,7 @@ export class SystemManager {
    * an array of the currently managed systems
    * memoized on startup
    */
-  get systems(): EntitySystem<any, any, any, any>[] {
+  get systems(): EntitySystem[] {
     if (this._systems) return this._systems;
     this._systems = this._staticSystems.concat(this._reactiveSystems);
     return this._systems;
@@ -42,7 +38,7 @@ export class SystemManager {
    * @param name class name of the registered system
    * @returns the registered system with the given name
    */
-  getSystemByTypeName<T extends EntitySystem<any, any, any, any>>(
+  getSystemByTypeName<T extends EntitySystem>(
     name: string
   ): T {
     return this._systemTypes[name] as T;
@@ -55,16 +51,12 @@ export class SystemManager {
    * @returns a reference to the registered system
    */
   registerSystem<
-    T extends ComponentTuple,
-    V extends ComponentOptionTuple,
-    W extends ComponentTuple,
-    Props,
-    Sys extends typeof EntitySystem<T, Props, V, W>,
-    Args extends EntitySystemArgs<T, Props, V, W>
+    Args,
+    Sys extends EntitySystem, 
   >(
-    System: Sys,
-    args: SystemRegistrationArgs<Props>
-  ): EntitySystem<T, Props, V, W> {
+    System: new (args: Args) => Sys,
+    args: Args
+  ): Sys {
     const props = {
       id: this._nextId++,
       ecsInstance: this._ecsInstance,

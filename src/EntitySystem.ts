@@ -11,10 +11,10 @@ import {
 } from './types';
 
 export class EntitySystem<
-  T extends ComponentTuple = any,
+  T extends ComponentTuple = ComponentTuple,
   Props = any,
-  V extends ComponentOptionTuple = any,
-  W extends ComponentTuple = any
+  V extends ComponentOptionTuple = ComponentOptionTuple,
+  W extends ComponentTuple = ComponentTuple,
 > {
   private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();
@@ -26,8 +26,8 @@ export class EntitySystem<
   protected reactive = false;
   props: EntitySystemArgs<T, Props, V, W>;
   needed!: [...T];
-  optional!: [...V]; //[...V];
-  unwanted!: [...W]; //[...W];
+  optional!: [...V];
+  unwanted!: [...W];
 
   constructor(props: EntitySystemArgs<T, Props, V, W>) {
     this.props = props;
@@ -36,8 +36,8 @@ export class EntitySystem<
     this.reactive = props.reactive || false;
     this._priority = props.priority || 0;
     this.needed = props.needed;
-    this.optional = props.optional || ([] as any);
-    this.unwanted = props.unwanted || ([] as any);
+    this.optional = props.optional || ([] as unknown as [...V]);
+    this.unwanted = props.unwanted || ([] as unknown as [...W]);
   }
 
   get id(): number {
