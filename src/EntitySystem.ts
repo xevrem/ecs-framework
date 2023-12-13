@@ -11,10 +11,10 @@ import {
 } from './types';
 
 export class EntitySystem<
-  Props,
-  T extends ComponentTuple,
-  V extends ComponentOptionTuple,
-  W extends ComponentTuple,
+  Props = any,
+  T extends ComponentTuple = [],
+  V extends ComponentOptionTuple = [],
+  W extends ComponentTuple = [],
 > {
   private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();

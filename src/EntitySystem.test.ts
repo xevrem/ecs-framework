@@ -1,4 +1,5 @@
 /*eslint no-empty-function: off*/
+import { EntitySystemArgs } from 'types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import ecsRig from './EcsRig';
@@ -11,8 +12,13 @@ describe('EntitySystem', () => {
     foo!: number;
   }
 
-  class TestSystem extends EntitySystem {
-    needed = [TestComp];
+  class TestSystem extends EntitySystem<any, [typeof TestComp]> {
+    constructor(props: EntitySystemArgs<any, [typeof TestComp]>) {
+      super({
+        ...props,
+        needed: [TestComp],
+      });
+    }
     initialize(): void {}
     load(_entities: Bag<Entity>): void {}
     created(_entity: Entity): void {}
@@ -29,7 +35,7 @@ describe('EntitySystem', () => {
   }
 
   it('should instantiate without crashing', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       expect(() =>
         rig.ecs.systemManager.registerSystem(TestSystem, {})
       ).not.toThrow();
@@ -37,7 +43,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle initializing', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'initialize');
       rig.ecs.systemManager.initializeSystems();
@@ -46,7 +52,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle loading', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'load');
       rig.ecs.systemManager.loadSystems();
@@ -55,7 +61,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle adding entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'created');
       const entity = rig.ecs.createEntity();
@@ -67,7 +73,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle deleting entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'deleted');
       const entity = rig.ecs.createEntity();
@@ -84,7 +90,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle adding entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'added');
       const entity = rig.ecs.createEntity();
@@ -100,7 +106,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle removing entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'removed');
       const entity = rig.ecs.createEntity();
@@ -115,7 +121,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle cleaning up', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'cleanUp');
       const entity = rig.ecs.createEntity();
@@ -130,7 +136,7 @@ describe('EntitySystem', () => {
   });
 
   it('should handle reset', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const spy = jest.spyOn(system, 'reset');
       const entity = rig.ecs.createEntity();
@@ -145,7 +151,7 @@ describe('EntitySystem', () => {
   });
 
   it('should be able to process', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const entity = rig.ecs.createEntity();
       const comp = new TestComp();
@@ -159,7 +165,7 @@ describe('EntitySystem', () => {
   });
 
   it('should call begin and end during processing', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
       const entity = rig.ecs.createEntity();
       const comp = new TestComp();

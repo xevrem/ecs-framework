@@ -3,7 +3,7 @@ import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 import {
-    EntitySystemArgs,
+  EntitySystemArgs,
   SmartResolve,
   SmartUpdate,
   SystemRegistrationArgs,
@@ -54,18 +54,15 @@ export class SystemManager {
    */
   registerSystem<
     Props,
-    SysArgs extends SystemRegistrationArgs<Props>, 
+    SysArgs extends SystemRegistrationArgs<Props>,
     EsArgs extends EntitySystemArgs<Props, any, any, any>,
-    Sys extends EntitySystem<Props, any, any, any>, 
-  >(
-    System: new (args: EsArgs) => Sys,
-    args: SysArgs
-  ): Sys {
+    Sys extends EntitySystem<Props, any, any, any>
+  >(System: new (args: EsArgs) => Sys, args: SysArgs): Sys {
     const props: EsArgs = {
       id: this._nextId++,
       ecsInstance: this._ecsInstance,
       ...args,
-    } as any
+    } as any;
     const system = new System(props);
 
     system.buildQuery();
