@@ -9,6 +9,7 @@ import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
 import { is_none } from './utils';
+import { isComponent } from './Component';
 export class EcsInstance {
     constructor() {
         this._destroyed = false;
@@ -241,6 +242,14 @@ export class EcsInstance {
      */
     registerComponent(component) {
         this.componentManager.registerComponent(component);
+    }
+    async registerComponents(fileName) {
+        const components = await import(fileName);
+        Object.values(components).forEach(value => {
+            if (isComponent(value)) {
+                this.registerComponent(value);
+            }
+        });
     }
     registerSystem(System, args) {
         return this.systemManager.registerSystem(System, args);

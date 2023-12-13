@@ -11,7 +11,7 @@ import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
 import { is_none } from './utils';
 import { Entity } from './Entity';
-import { Component } from './Component';
+import { Component, isComponent } from './Component';
 import {
   ComponentOptionTuple,
   ComponentTuple,
@@ -338,15 +338,23 @@ export class EcsInstance {
     this.componentManager.registerComponent(component);
   }
 
+  async registerComponents(fileName: string): Promise<void> {
+    const components: Record<PropertyKey, typeof Component> = await import(
+      fileName
+    );
+    Object.values(components).forEach(value => {
+      if (isComponent(value)) {
+        this.registerComponent(value);
+      }
+    });
+  }
+
   registerSystem<
     Props,
-    SysArgs extends SystemRegistrationArgs<Props>, 
+    SysArgs extends SystemRegistrationArgs<Props>,
     EsArgs extends EntitySystemArgs<Props, any, any, any>,
-    Sys extends EntitySystem<Props, any, any, any>, 
-  >(
-    System: new(args: EsArgs) => Sys,
-    args: SysArgs
-  ): Sys {
+    Sys extends EntitySystem<Props, any, any, any>
+  >(System: new (args: EsArgs) => Sys, args: SysArgs): Sys {
     return this.systemManager.registerSystem(System, args);
   }
 
