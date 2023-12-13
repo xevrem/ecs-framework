@@ -338,10 +338,9 @@ export class EcsInstance {
     this.componentManager.registerComponent(component);
   }
 
-  async registerComponents(fileName: string): Promise<void> {
-    const components: Record<PropertyKey, typeof Component> = await import(
-      fileName
-    );
+  async registerComponents(
+    components: Record<PropertyKey, typeof Component>
+  ): Promise<void> {
     Object.values(components).forEach(value => {
       if (isComponent(value)) {
         this.registerComponent(value);

@@ -167,7 +167,7 @@ export declare class EcsInstance {
      * @param component the component type to register
      */
     registerComponent<C extends typeof Component>(component: C): void;
-    registerComponents(fileName: string): Promise<void>;
+    registerComponents(components: Record<PropertyKey, typeof Component>): Promise<void>;
     registerSystem<Props, SysArgs extends SystemRegistrationArgs<Props>, EsArgs extends EntitySystemArgs<Props, any, any, any>, Sys extends EntitySystem<Props, any, any, any>>(System: new (args: EsArgs) => Sys, args: SysArgs): Sys;
     /**
      * remove the given component from its owner
