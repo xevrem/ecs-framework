@@ -24,7 +24,6 @@ import {
   EntityBuilder,
   QueryFunc,
   Option,
-  EntitySystemArgs,
 } from './types';
 
 export class EcsInstance {
