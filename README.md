@@ -122,7 +122,8 @@ const ecs = new EcsInstance();
 ecs.registerComponent(YourComponent);
 
 // 2b) or register them all at once via import (experimental):
-await ecs.registerComponents('./path/to/your/components');
+import AllComponents from 'path/to/all/components';
+ecs.registerComponents(AllComponents);
 
 // NOTE: you must register components before you register systems
 
