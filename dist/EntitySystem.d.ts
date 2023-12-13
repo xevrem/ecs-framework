@@ -3,7 +3,7 @@ import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
 import { Query } from './Query';
 import { ComponentOptionTuple, ComponentTuple, JoinedResult, SmartUpdate, EntitySystemArgs } from './types';
-export declare class EntitySystem<Props, T extends ComponentTuple, V extends ComponentOptionTuple, W extends ComponentTuple> {
+export declare class EntitySystem<Props = any, T extends ComponentTuple = [], V extends ComponentOptionTuple = [], W extends ComponentTuple = []> {
     private _id;
     private _entities;
     private _ecsInstance;
