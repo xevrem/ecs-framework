@@ -14,10 +14,10 @@ export declare type EntitySystemArgs<
   T extends ComponentTuple,
   V extends ComponentOptionTuple = ComponentOptionTuple,
   W extends ComponentTuple = ComponentTuple
-> = {
+> = SystemRegistrationArgs<Props> & {
   id: number;
   ecsInstance: EcsInstance;
   needed: [...T];
   optional?: [...V];
   unwanted?: [...W];
-} & SystemRegistrationArgs<Props>;
+};

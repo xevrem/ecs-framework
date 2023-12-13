@@ -10,7 +10,7 @@ import { Bag } from './Bag';
 import { FuncQuery } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component } from './Component';
-import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, Option } from './types';
+import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, Option, EntitySystemArgs, SystemRegistrationArgs } from './types';
 export declare class EcsInstance {
     entityManager: EntityManager;
     componentManager: ComponentManager;
@@ -167,7 +167,7 @@ export declare class EcsInstance {
      * @param component the component type to register
      */
     registerComponent<C extends typeof Component>(component: C): void;
-    registerSystem<Args, Sys extends EntitySystem>(System: new (args: Args) => Sys, args: Args): Sys;
+    registerSystem<Props, SysArgs extends SystemRegistrationArgs<Props>, EsArgs extends EntitySystemArgs<Props, any, any, any>, Sys extends EntitySystem<Props, any, any, any>>(System: new (args: EsArgs) => Sys, args: SysArgs): Sys;
     /**
      * remove the given component from its owner
      * @param component the component to remove

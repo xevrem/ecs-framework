@@ -3,7 +3,7 @@ import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
 import { Query } from './Query';
 import { ComponentOptionTuple, ComponentTuple, JoinedResult, SmartUpdate, EntitySystemArgs } from './types';
-export declare class EntitySystem<T extends ComponentTuple = ComponentTuple, Props = any, V extends ComponentOptionTuple = ComponentOptionTuple, W extends ComponentTuple = ComponentTuple> {
+export declare class EntitySystem<Props, T extends ComponentTuple, V extends ComponentOptionTuple, W extends ComponentTuple> {
     private _id;
     private _entities;
     private _ecsInstance;
@@ -12,11 +12,11 @@ export declare class EntitySystem<T extends ComponentTuple = ComponentTuple, Pro
     private _active;
     private _dirty;
     protected reactive: boolean;
-    props: EntitySystemArgs<T, Props, V, W>;
+    props: EntitySystemArgs<Props, T, V, W>;
     needed: [...T];
     optional: [...V];
     unwanted: [...W];
-    constructor(props: EntitySystemArgs<T, Props, V, W>);
+    constructor(props: EntitySystemArgs<Props, T, V, W>);
     get id(): number;
     get ecs(): EcsInstance;
     get ecsInstance(): EcsInstance;

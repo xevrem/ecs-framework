@@ -13,7 +13,7 @@ type SystemQuery<T extends ComponentTuple, V extends ComponentOptionTuple, W ext
 export declare interface EcsRig {
     ecs: EcsInstance;
     makeComponentType: () => typeof Bar;
-    makeSystemType: <T extends ComponentTuple, Props extends Record<PropertyKey, any>, V extends ComponentOptionTuple, W extends ComponentTuple>(queries: SystemQuery<T, V, W>) => new (props: EntitySystemArgs<T, Props, V, W>) => EntitySystem<T, Props, V, W>;
+    makeSystemType: <Props, T extends ComponentTuple, V extends ComponentOptionTuple, W extends ComponentTuple, EsArgs extends EntitySystemArgs<Props, T, V, W>, Sys extends EntitySystem<Props, T, V, W>>(queries: SystemQuery<T, V, W>) => new (props: EsArgs) => Sys;
 }
 export declare type EcsRigCallback = (rig: EcsRig) => void;
 export default function ecsRig(callback: EcsRigCallback): void;

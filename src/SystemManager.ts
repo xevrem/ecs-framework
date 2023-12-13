@@ -6,6 +6,7 @@ import {
     EntitySystemArgs,
   SmartResolve,
   SmartUpdate,
+  SystemRegistrationArgs,
 } from './types';
 
 export class SystemManager {
@@ -60,13 +61,11 @@ export class SystemManager {
     System: new (args: EsArgs) => Sys,
     args: SysArgs
   ): Sys {
-    const props = {
+    const props: EsArgs = {
       id: this._nextId++,
       ecsInstance: this._ecsInstance,
-      reactive: false,
-      priority: 0,
       ...args,
-    } as EsArgs;
+    } as any
     const system = new System(props);
 
     system.buildQuery();

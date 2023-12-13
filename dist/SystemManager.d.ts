@@ -2,7 +2,7 @@ import { EcsInstance } from './EcsInstance';
 import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import { SmartResolve, SmartUpdate } from './types';
+import { EntitySystemArgs, SmartResolve, SmartUpdate, SystemRegistrationArgs } from './types';
 export declare class SystemManager {
     private _ecsInstance;
     private _staticSystems;
@@ -15,21 +15,21 @@ export declare class SystemManager {
      * an array of the currently managed systems
      * memoized on startup
      */
-    get systems(): EntitySystem[];
+    get systems(): EntitySystem<any, any, any, any>[];
     /**
      * WARNING this is a debug function
      * get the system registered by the specified class name
      * @param name class name of the registered system
      * @returns the registered system with the given name
      */
-    getSystemByTypeName<T extends EntitySystem>(name: string): T;
+    getSystemByTypeName<T extends EntitySystem<any, any, any, any>>(name: string): T;
     /**
      * register a given system class
      * @param System the system class to register
      * @param args the system registration arguments
      * @returns a reference to the registered system
      */
-    registerSystem<Args, Sys extends EntitySystem>(System: new (args: Args) => Sys, args: Args): Sys;
+    registerSystem<Props, SysArgs extends SystemRegistrationArgs<Props>, EsArgs extends EntitySystemArgs<Props, any, any, any>, Sys extends EntitySystem<Props, any, any, any>>(System: new (args: EsArgs) => Sys, args: SysArgs): Sys;
     /**
      * initialize all registered systems
      */

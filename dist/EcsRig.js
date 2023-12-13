@@ -11,9 +11,9 @@ export default function ecsRig(callback) {
             };
         },
         makeSystemType: (query) => {
-            class Sys extends EntitySystem {
-                constructor() {
-                    super(...arguments);
+            class System extends EntitySystem {
+                constructor(props) {
+                    super(props);
                     this.needed = query.needed;
                     this.optional = query.optional || [];
                     this.unwanted = query.unwanted || [];
@@ -30,7 +30,7 @@ export default function ecsRig(callback) {
                 end() { }
                 process(_entity, _query, _delta) { }
             }
-            return Sys;
+            return System;
         },
     };
     const destroy = () => {

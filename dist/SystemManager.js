@@ -35,8 +35,6 @@ export class SystemManager {
         const props = {
             id: this._nextId++,
             ecsInstance: this._ecsInstance,
-            reactive: false,
-            priority: 0,
             ...args,
         };
         const system = new System(props);

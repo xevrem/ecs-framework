@@ -1,4 +1,9 @@
-import { ComponentOptionTuple, ComponentTuple, EntitySystemArgs } from './types';
+import {
+  ComponentOptionTuple,
+  ComponentTuple,
+  EntitySystemArgs,
+  InstanceOf,
+} from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
@@ -24,18 +29,15 @@ export declare interface EcsRig {
   ecs: EcsInstance;
   makeComponentType: () => typeof Bar;
   makeSystemType: <
+    Props,
     T extends ComponentTuple,
-    Props extends Record<PropertyKey, any>,
     V extends ComponentOptionTuple,
-    W extends ComponentTuple
+    W extends ComponentTuple,
+    EsArgs extends EntitySystemArgs<Props, T, V, W>,
+    Sys extends EntitySystem<Props, T, V, W>
   >(
     queries: SystemQuery<T, V, W>
-  ) => new (props: EntitySystemArgs<T, Props, V, W>) => EntitySystem<
-    T,
-    Props,
-    V,
-    W
-  >;
+  ) => new (props: EsArgs) => Sys;
 }
 
 export declare type EcsRigCallback = (rig: EcsRig) => void;
@@ -47,22 +49,22 @@ export default function ecsRig(callback: EcsRigCallback): void {
       return class Foo extends Bar {};
     },
     makeSystemType: <
+      Props,
       T extends ComponentTuple,
-      Props extends Record<PropertyKey, any>,
       V extends ComponentOptionTuple,
-      W extends ComponentTuple
+      W extends ComponentTuple,
+      EsArgs extends EntitySystemArgs<Props, T, V, W>,
+      Sys extends EntitySystem<Props, T, V, W>
     >(
       query: SystemQuery<T, V, W>
-    ): new (props: EntitySystemArgs<T, Props, V, W>) => EntitySystem<
-      T,
-      Props,
-      V,
-      W
-    > => {
-      class Sys extends EntitySystem<T, Props, V, W> {
+    ): new (props: EsArgs) => InstanceOf<Sys> => {
+      class System extends EntitySystem<Props, T, V, W> {
         needed = query.needed;
         optional = query.optional || ([] as V);
         unwanted = query.unwanted || ([] as W);
+        constructor(props: EsArgs) {
+          super(props);
+        }
         initialize(): void {}
         load(_entities: Bag<Entity>): void {}
         created(_entity: Entity): void {}
@@ -75,7 +77,7 @@ export default function ecsRig(callback: EcsRigCallback): void {
         end(): void {}
         process(_entity: Entity, _query: Query, _delta: number): void {}
       }
-      return Sys;
+      return System as any;
     },
   };
 
