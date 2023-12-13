@@ -3,16 +3,17 @@ import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 import {
+    EntitySystemArgs,
   SmartResolve,
   SmartUpdate,
 } from './types';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
-  private _staticSystems: EntitySystem[];
-  private _reactiveSystems: EntitySystem[];
-  private _systemTypes: Record<string, EntitySystem> = {};
-  private _systems!: EntitySystem[];
+  private _staticSystems: EntitySystem<any, any, any, any>[];
+  private _reactiveSystems: EntitySystem<any, any, any, any>[];
+  private _systemTypes: Record<string, EntitySystem<any, any, any, any>> = {};
+  private _systems!: EntitySystem<any, any, any, any>[];
   private _nextId: number;
 
   constructor(ecsInstance: EcsInstance) {
@@ -26,7 +27,7 @@ export class SystemManager {
    * an array of the currently managed systems
    * memoized on startup
    */
-  get systems(): EntitySystem[] {
+  get systems(): EntitySystem<any, any, any, any>[] {
     if (this._systems) return this._systems;
     this._systems = this._staticSystems.concat(this._reactiveSystems);
     return this._systems;
@@ -38,7 +39,7 @@ export class SystemManager {
    * @param name class name of the registered system
    * @returns the registered system with the given name
    */
-  getSystemByTypeName<T extends EntitySystem>(
+  getSystemByTypeName<T extends EntitySystem<any, any, any, any>>(
     name: string
   ): T {
     return this._systemTypes[name] as T;
@@ -51,11 +52,13 @@ export class SystemManager {
    * @returns a reference to the registered system
    */
   registerSystem<
-    Args,
-    Sys extends EntitySystem, 
+    Props,
+    SysArgs extends SystemRegistrationArgs<Props>, 
+    EsArgs extends EntitySystemArgs<Props, any, any, any>,
+    Sys extends EntitySystem<Props, any, any, any>, 
   >(
-    System: new (args: Args) => Sys,
-    args: Args
+    System: new (args: EsArgs) => Sys,
+    args: SysArgs
   ): Sys {
     const props = {
       id: this._nextId++,
@@ -63,7 +66,7 @@ export class SystemManager {
       reactive: false,
       priority: 0,
       ...args,
-    } as Args;
+    } as EsArgs;
     const system = new System(props);
 
     system.buildQuery();

@@ -11,10 +11,10 @@ import {
 } from './types';
 
 export class EntitySystem<
-  T extends ComponentTuple = ComponentTuple,
-  Props = any,
-  V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple,
+  Props,
+  T extends ComponentTuple,
+  V extends ComponentOptionTuple,
+  W extends ComponentTuple,
 > {
   private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();
@@ -24,12 +24,12 @@ export class EntitySystem<
   private _active = true;
   private _dirty = false;
   protected reactive = false;
-  props: EntitySystemArgs<T, Props, V, W>;
+  props: EntitySystemArgs<Props, T, V, W>;
   needed!: [...T];
   optional!: [...V];
   unwanted!: [...W];
 
-  constructor(props: EntitySystemArgs<T, Props, V, W>) {
+  constructor(props: EntitySystemArgs<Props, T, V, W>) {
     this.props = props;
     this._id = props.id;
     this._ecsInstance = props.ecsInstance;

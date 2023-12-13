@@ -24,6 +24,8 @@ import {
   EntityBuilder,
   QueryFunc,
   Option,
+  EntitySystemArgs,
+  SystemRegistrationArgs,
 } from './types';
 
 export class EcsInstance {
@@ -337,11 +339,13 @@ export class EcsInstance {
   }
 
   registerSystem<
-    Args, 
-    Sys extends EntitySystem,
+    Props,
+    SysArgs extends SystemRegistrationArgs<Props>, 
+    EsArgs extends EntitySystemArgs<Props, any, any, any>,
+    Sys extends EntitySystem<Props, any, any, any>, 
   >(
-    System: new(args: Args) => Sys,
-    args: Args
+    System: new(args: EsArgs) => Sys,
+    args: SysArgs
   ): Sys {
     return this.systemManager.registerSystem(System, args);
   }
