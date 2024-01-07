@@ -1,3 +1,4 @@
+import { is_none, Option } from 'onsreo';
 import { EntityManager } from './EntityManager';
 import { ComponentManager } from './ComponentManager';
 import { SystemManager } from './SystemManager';
@@ -9,7 +10,6 @@ import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
-import { is_none } from './utils';
 import { Entity } from './Entity';
 import { Component, isComponent } from './Component';
 import {
@@ -23,7 +23,6 @@ import {
   SmartUpdate,
   EntityBuilder,
   QueryFunc,
-  Option,
   EntitySystemArgs,
   SystemRegistrationArgs,
 } from './types';

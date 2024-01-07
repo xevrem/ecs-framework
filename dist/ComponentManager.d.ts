@@ -1,8 +1,8 @@
+import { Option } from 'onsreo';
 import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
 import { Component } from './Component';
-import { Option } from './types';
 export declare class ComponentManager {
     private _ecsInstance;
     private _components;

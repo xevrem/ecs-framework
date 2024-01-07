@@ -1,5 +1,5 @@
+import { Option } from 'onsreo';
 import { EcsInstance } from '../EcsInstance';
-import { Option } from './common';
 import { ComponentOptionTuple, ComponentTuple } from './tuples';
 
 export declare type SystemRegistrationArgs<Props = any> = {

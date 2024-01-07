@@ -1,3 +1,4 @@
+import { Option } from 'onsreo';
 import { EntityManager } from './EntityManager';
 import { ComponentManager } from './ComponentManager';
 import { SystemManager } from './SystemManager';
@@ -10,7 +11,7 @@ import { Bag } from './Bag';
 import { FuncQuery } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component } from './Component';
-import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, Option, EntitySystemArgs, SystemRegistrationArgs } from './types';
+import { ComponentOptionTuple, ComponentTuple, JoinedData, JoinedResult, OrderedComponentOptionTuple, OrderedComponentTuple, EntityBuilder, QueryFunc, EntitySystemArgs, SystemRegistrationArgs } from './types';
 export declare class EcsInstance {
     entityManager: EntityManager;
     componentManager: ComponentManager;

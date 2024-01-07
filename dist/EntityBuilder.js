@@ -1,4 +1,4 @@
-import { is_none, is_some } from './utils';
+import { is_some, is_none } from 'onsreo';
 import { Bag } from './Bag';
 /**
  * creates a builder that allows you to chain calls to build up an entity

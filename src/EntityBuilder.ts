@@ -1,4 +1,4 @@
-import { is_none, is_some } from './utils';
+import { is_some, is_none, Result, Option } from 'onsreo';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
@@ -9,8 +9,6 @@ import {
   DataBuilderFunction,
   EntityBuilder,
   StringBuilderFunction,
-  Option,
-  Result,
 } from './types';
 
 /**

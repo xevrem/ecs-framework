@@ -1,6 +1,6 @@
 {
   "name": "ecsf",
-  "version": "1.0.11",
+  "version": "1.0.13",
   "description": "Entity Component System Framework for JavaScript",
   "source": "src/index.ts",
   "module": "dist/index.js",
@@ -17,6 +17,15 @@
     "type": "git",
     "url": "git+https://github.com/xevrem/ecs-framework.git"
   },
+  "keywords": [
+    "entity",
+    "component",
+    "system",
+    "ecs",
+    "framework",
+    "game",
+    "gaming"
+  ],
   "author": "Erika V. Jonell",
   "license": "MIT",
   "bugs": {
@@ -32,5 +41,8 @@
     "prettier": "^2.8.4",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "onsreo": "^1.0.3"
   }
 }

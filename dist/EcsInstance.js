@@ -1,3 +1,4 @@
+import { is_none } from 'onsreo';
 import { EntityManager } from './EntityManager';
 import { ComponentManager } from './ComponentManager';
 import { SystemManager } from './SystemManager';
@@ -8,7 +9,6 @@ import { Scheduler } from './Scheduler';
 import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
 import { FuncQuery } from './FuncQuery';
-import { is_none } from './utils';
 import { isComponent } from './Component';
 export class EcsInstance {
     constructor() {

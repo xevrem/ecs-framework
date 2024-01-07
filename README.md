@@ -1,7 +1,7 @@
 # ecs-framework
 ===============
 
-an ECS framework for javascript (in-work)
+an ECS framework for JavaScript/TypeScript
 
 
 ## create an instance:
@@ -31,7 +31,10 @@ foo.myDataProp = 42;
  * and should be checked for validity just in-case
  * something bad happened during creation. This is
  * only really necissary if you need the entity id
- * right after it is created.
+ * right after it is created. NOTE: you don't have
+ * to check the entity, but if you wanted to make
+ * use of its `id` after creation, you would need
+ * to validate it is OK first.
  */
 const entity = ecs
   .create()
@@ -118,7 +121,7 @@ ecs.registerSystem(FooSystem, {
 
 const ecs = new EcsInstance();
 
-// 2a) register your components indidually:
+// 2a) register your components individually:
 ecs.registerComponent(YourComponent);
 
 // 2b) or register them all at once via import:

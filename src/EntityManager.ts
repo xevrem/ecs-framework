@@ -1,4 +1,4 @@
-import { Option } from './types';
+import { Option } from 'onsreo';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 

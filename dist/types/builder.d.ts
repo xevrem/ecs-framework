@@ -1,6 +1,6 @@
+import { Option, Result } from 'onsreo';
 import { Component } from '../Component';
 import { Entity } from '../Entity';
-import { Option, Result } from './common';
 
 /**
  * creates an Entity builder that allows you to chain common entity build patterns

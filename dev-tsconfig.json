@@ -11,15 +11,14 @@
     "noImplicitReturns": true,
     "strictNullChecks": false,
     "esModuleInterop": true,
-    "module": "system",
+    "module": "esnext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "outFile": "dist/index.ts",
     "baseUrl": "src"
   },
   "include": [
     "src/**/*",
     "src/types/**/*.d.ts"
   ],
-  "exclude": ["node_modules/**/*"]
+  "exclude": ["node_modules/**/*", "dist/**/*"]
 }
