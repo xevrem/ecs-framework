@@ -13,10 +13,10 @@ export declare type EntityBuilder = {
   also(callback: DataBuilderFunction): EntityBuilder;
   /**
    * finalizes the build of this component
-   * @return a `Result` that is either `Ok<Entity>` on success
+   * @return a `Result<Entity, Error>` that is either `Ok<Entity>` on success
    *         or `Err<Error>` on failure
    */
-  build(): Result<Entity, Error>;
+  build<E>(): Result<Entity, E>;
   /**
    * add component to entity
    * @param component the component to add

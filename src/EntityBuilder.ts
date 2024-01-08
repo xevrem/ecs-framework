@@ -31,7 +31,7 @@ export function makeEntityBuilder(ecs: EcsInstance): EntityBuilder {
   const tagCallbacks: StringBuilderFunction[] = [];
   const workingData: Record<PropertyKey, unknown> = {};
   const builder: EntityBuilder = {
-    build<E extends Error = Error>(): Result<Entity, E> {
+    build<E>(): Result<Entity, E> {
       entity = ecs.createEntity();
       let currentBuilder: EntityBuilder = this;
       try {
@@ -72,7 +72,7 @@ export function makeEntityBuilder(ecs: EcsInstance): EntityBuilder {
       } catch (e) {
         console.error('ENTITY BUILDER ERROR:', e);
         ecs.abort(entity);
-        return e as E;
+        return e as Result<Entity, E>;
       }
     },
     add(component: Component): EntityBuilder {

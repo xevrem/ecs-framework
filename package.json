@@ -1,6 +1,6 @@
 {
   "name": "ecsf",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Entity Component System Framework for JavaScript",
   "source": "src/index.ts",
   "module": "dist/index.js",
@@ -43,6 +43,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "onsreo": "^1.0.3"
+    "onsreo": "^1.0.4"
   }
 }
