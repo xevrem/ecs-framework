@@ -8,12 +8,12 @@ import {
   JoinedData,
   JoinedQuery,
   JoinedResult,
-} from './types';
+} from 'types';
 
 export declare interface QueryArgs<
   T extends ComponentTuple = ComponentTuple,
   V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple
+  W extends ComponentTuple = ComponentTuple,
 > {
   ecsInstance: EcsInstance;
   needed: [...T];
@@ -24,7 +24,7 @@ export declare interface QueryArgs<
 export class Query<
   T extends ComponentTuple = ComponentTuple,
   V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple
+  W extends ComponentTuple = ComponentTuple,
 > {
   private _ecsInstance: EcsInstance;
   private _needed: [...T];
@@ -64,7 +64,7 @@ export class Query<
   get<T extends typeof Component>(component: T): InstanceType<T> {
     return this._ecsInstance.getComponent(
       this._entity,
-      component
+      component,
     ) as InstanceType<T>;
   }
 
@@ -82,7 +82,7 @@ export class Query<
       for (let i = 0; i < this._needed.length; i++) {
         const component = this._ecsInstance.getComponent(
           entity,
-          this._needed[i]
+          this._needed[i],
         );
         if (!component) continue entityLoop;
         components.push(component);
@@ -91,7 +91,7 @@ export class Query<
       for (let i = 0; i < this._optional.length; i++) {
         const component = this._ecsInstance.getComponent(
           entity,
-          this._optional[i]
+          this._optional[i],
         );
         components.push(component);
       }
@@ -157,10 +157,7 @@ export class Query<
 
   isOptional(entity: Entity): boolean {
     for (let i = this._optional.length; i--; ) {
-      if (
-        this._optional[i] &&
-        this._ecsInstance.hasComponent(entity, this._optional[i].type)
-      )
+      if (this._ecsInstance.hasComponentOfType(entity, this._optional[i]))
         return true;
     }
     return false;
@@ -168,7 +165,7 @@ export class Query<
 
   isOptionalById(id: number): boolean {
     for (let i = this._optional.length; i--; ) {
-      if (this._ecsInstance.hasComponentById(id, this._optional[i].type))
+      if (this._ecsInstance.hasComponentByIdOfType(id, this._optional[i]))
         return true;
     }
     return false;
@@ -191,12 +188,12 @@ export class Query<
   join<
     T extends (typeof Component)[],
     V extends (typeof Component)[],
-    W extends (typeof Component)[]
+    W extends (typeof Component)[],
   >(
     entities: Entity[],
     needed?: [...T],
     optional?: [...V],
-    unwanted?: [...W]
+    unwanted?: [...W],
   ): IterableIterator<JoinedResult<T, V>> {
     return this._ecsInstance.join(entities, needed, optional, unwanted);
   }
@@ -204,12 +201,12 @@ export class Query<
   joinById<
     T extends (typeof Component)[],
     V extends (typeof Component)[],
-    W extends (typeof Component)[]
+    W extends (typeof Component)[],
   >(
     ids: number[],
     needed?: [...T],
     optional?: [...V],
-    unwanted?: [...W]
+    unwanted?: [...W],
   ): IterableIterator<JoinedResult<T, V>> {
     return this._ecsInstance.joinById(ids, needed, optional, unwanted);
   }
@@ -217,11 +214,11 @@ export class Query<
   joinAll<
     T extends (typeof Component)[],
     V extends (typeof Component)[],
-    W extends (typeof Component)[]
+    W extends (typeof Component)[],
   >(
     needed?: [...T],
     optional?: [...V],
-    unwanted?: [...W]
+    unwanted?: [...W],
   ): IterableIterator<JoinedResult<T, V>> {
     return this._ecsInstance.joinAll(needed, optional, unwanted);
   }

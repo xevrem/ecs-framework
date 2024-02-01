@@ -1,24 +1,5 @@
 {
-  "compilerOptions" : {
-    "target": "es2020",
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "allowJs": false,
-    "noEmit": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "strictNullChecks": false,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "src"
-  },
-  "include": [
-    "src/**/*",
-    "src/types/**/*.d.ts"
-  ],
-  "exclude": ["node_modules/**/*", "dist/**/*"]
+  "extends": "./tsconfig.json",
+  "include": ["src"],
+  "exclude": ["dist", "src/**/*.test.ts"]
 }

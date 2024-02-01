@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "src",
     "target": "es2015",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -11,7 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
-  }
+    "skipLibCheck": false,
+    "resolveJsonModule": true,
+  },
+  "exclude": ["dist"],
 }

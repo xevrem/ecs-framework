@@ -1,11 +1,9 @@
-import { EcsInstance } from './EcsInstance';
-import { ComponentTuple, OrderedComponentTuple } from './types';
-
-// export declare type VariadricQuery<T extends ComponentTuple> = [...T];
+import { EcsInstance } from 'EcsInstance';
+import { ComponentTuple, OrderedComponentTuple } from 'types';
 
 export class FuncQuery<T extends ComponentTuple> {
-  ecs!: EcsInstance;
-  data!: [...T];
+  ecs: EcsInstance;
+  data: [...T];
 
   constructor(ecs: EcsInstance, data: [...T]) {
     this.ecs = ecs;

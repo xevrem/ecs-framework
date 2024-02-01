@@ -1,4 +1,4 @@
-import { Option } from 'onsreo';
+import { Option, is_none, is_some } from 'onsreo';
 import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
@@ -88,9 +88,11 @@ export class ComponentManager {
    * @returns a bag of components of the type specified
    */
   getComponentsByType<C extends typeof Component>(
-    component: C
+    component: Option<C>,
   ): Option<Bag<InstanceType<C>>> {
-    return this._components.get(component.type);
+    return is_some(component)
+      ? this._components.get(component.type)
+      : undefined;
   }
 
   /**
@@ -101,9 +103,11 @@ export class ComponentManager {
    */
   getComponent<C extends typeof Component>(
     entity: Entity,
-    component: C
+    component: Option<C>,
   ): Option<InstanceType<C>> {
-    return this._components.get(component.type)?.get(entity.id);
+    return is_some(component)
+      ? this._components.get(component.type)?.get(entity.id)
+      : undefined;
   }
 
   /**
@@ -114,25 +118,25 @@ export class ComponentManager {
    */
   getComponentById<C extends typeof Component>(
     id: number,
-    component: C
+    component: Option<C>,
   ): Option<InstanceType<C>> {
-    return this._components.get(component.type)?.get(id);
+    return is_some(component)
+      ? this._components.get(component.type)?.get(id)
+      : undefined;
   }
 
   getComponentByType<C extends typeof Component>(
     entity: Entity,
-    type: number
+    type: number,
   ): Option<InstanceType<C>> {
-    const components = this._components.get(type);
-    return components ? components.get(entity.id) : undefined;
+    return this._components.get(type)?.get(entity.id);
   }
 
   getComponentByTypeAndId<C extends typeof Component>(
     id: number,
-    type: number
+    type: number,
   ): Option<InstanceType<C>> {
-    const components = this._components.get(type);
-    return components ? components.get(id) : undefined;
+    return this._components.get(type)?.get(id);
   }
 
   /**
@@ -207,7 +211,7 @@ export class ComponentManager {
    */
   removeComponentType<C extends typeof Component>(
     entity: Entity,
-    component: C
+    component: C,
   ): void {
     const components = this._components.get(component.type);
     if (components) {
@@ -217,7 +221,7 @@ export class ComponentManager {
 
   removeComponentTypeById<C extends typeof Component>(
     id: number,
-    component: C
+    component: C,
   ): void {
     const components = this._components.get(component.type);
     if (components) {
@@ -234,7 +238,7 @@ export class ComponentManager {
   }
 
   /**
-   * does the given entity have a component of the specified type
+   * does the given entity have a component of the specified typeId
    * @param entity the entity to check
    * @param type the component type to check
    * @returns `true` if the entity has that component, otherwise `false`
@@ -247,7 +251,22 @@ export class ComponentManager {
   }
 
   /**
-   * checks if the entity with he given id has a component of the specified entity type
+   * does the given entity have a component of the specified type
+   * @param entity the entity to check
+   * @param type the component type to check
+   * @returns `true` if the entity has that component, otherwise `false`
+   */
+  hasComponentOfType<C extends typeof Component>(
+    entity: Entity,
+    componentType: Option<C>,
+  ): boolean {
+    return (
+      is_some(componentType) && this.hasComponent(entity, componentType.type)
+    );
+  }
+
+  /**
+   * checks if the entity with he given id has a component of the specified typeId
    * @param id the id of the entity to check
    * @param type the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
@@ -257,6 +276,21 @@ export class ComponentManager {
       return this._components.get(type)?.has(id) ?? false;
     }
     return false;
+  }
+
+  /**
+   * checks if the entity with he given id has a component of the specified type
+   * @param id the id of the entity to check
+   * @param type the type field of the component to check
+   * @returns `true` if the entity has the component otherwise `false`
+   */
+  hasComponentByIdOfType<C extends typeof Component>(
+    id: number,
+    componentType: Option<C>,
+  ): boolean {
+    return (
+      is_some(componentType) && this.hasComponentById(id, componentType.type)
+    );
   }
 
   /**

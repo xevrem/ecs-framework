@@ -7,7 +7,7 @@ describe('Scheduler', () => {
   });
 
   it('should be able to sort multiple systems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const SysA = rig.makeSystemType({
         needed: [Foo],
@@ -29,7 +29,7 @@ describe('Scheduler', () => {
   });
 
   it('should be able to run both static and reactive systems', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const SysA = rig.makeSystemType({
         needed: [Foo],
@@ -61,7 +61,7 @@ describe('Scheduler', () => {
       expect(spy).toHaveBeenCalled();
       expect(spy2).not.toHaveBeenCalled();
       jest.clearAllMocks();
-      foo.foo = 2;
+      foo.data = 2;
       rig.ecs.update(foo);
       rig.ecs.resolveEntities();
       rig.ecs.scheduler.runSystems();

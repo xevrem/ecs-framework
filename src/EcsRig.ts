@@ -2,7 +2,6 @@ import {
   ComponentOptionTuple,
   ComponentTuple,
   EntitySystemArgs,
-  InstanceOf,
 } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
@@ -11,14 +10,14 @@ import { Entity } from './Entity';
 import { EntitySystem } from './EntitySystem';
 import { Query } from './Query';
 
-class Bar extends Component {
-  [x: string]: number;
+class Bar<T> extends Component {
+  data!: T;
 }
 
 type SystemQuery<
   T extends ComponentTuple,
   V extends ComponentOptionTuple,
-  W extends ComponentTuple
+  W extends ComponentTuple,
 > = {
   needed: [...T];
   optional?: [...V];
@@ -27,17 +26,19 @@ type SystemQuery<
 
 export declare interface EcsRig {
   ecs: EcsInstance;
-  makeComponentType: () => typeof Bar;
-  makeSystemType: <
+  init(): void;
+  update(time?: number): void;
+  makeComponentType<T = number>(): typeof Bar<T>;
+  makeSystemType<
     Props,
     T extends ComponentTuple,
     V extends ComponentOptionTuple,
     W extends ComponentTuple,
     EsArgs extends EntitySystemArgs<Props, T, V, W>,
-    Sys extends EntitySystem<Props, T, V, W>
+    Sys extends EntitySystem<Props, T, V, W>,
   >(
-    queries: SystemQuery<T, V, W>
-  ) => new (props: EsArgs) => Sys;
+    queries: SystemQuery<T, V, W>,
+  ): new (props: EsArgs) => Sys;
 }
 
 export declare type EcsRigCallback = (rig: EcsRig) => void;
@@ -45,23 +46,30 @@ export declare type EcsRigCallback = (rig: EcsRig) => void;
 export default function ecsRig(callback: EcsRigCallback): void {
   const rig: EcsRig = {
     ecs: new EcsInstance(),
-    makeComponentType: () => {
-      return class Foo extends Bar {};
+    init() {
+      rig.ecs.initializeSystems();
+      rig.ecs.initialResolve();
+      rig.ecs.loadSystems();
+      rig.ecs.initialCreate();
+      rig.ecs.scheduleSystems();
     },
-    makeSystemType: <
+    makeComponentType<T = number>() {
+      class Foo extends Bar<T> {}
+      rig.ecs.registerComponent(Foo);
+      return Foo;
+    },
+    makeSystemType<
       Props,
       T extends ComponentTuple,
       V extends ComponentOptionTuple,
       W extends ComponentTuple,
       EsArgs extends EntitySystemArgs<Props, T, V, W>,
-      Sys extends EntitySystem<Props, T, V, W>
-    >(
-      query: SystemQuery<T, V, W>
-    ): new (props: EsArgs) => InstanceOf<Sys> => {
+      Sys extends EntitySystem<Props, T, V, W>,
+    >(query: SystemQuery<T, V, W>): new (props: EsArgs) => Sys {
       class System extends EntitySystem<Props, T, V, W> {
         needed = query.needed;
-        optional = query.optional || ([] as V);
-        unwanted = query.unwanted || ([] as W);
+        optional = query.optional || ([] as any);
+        unwanted = query.unwanted || ([] as any);
         constructor(props: EsArgs) {
           super(props);
         }
@@ -78,6 +86,11 @@ export default function ecsRig(callback: EcsRigCallback): void {
         process(_entity: Entity, _query: Query, _delta: number): void {}
       }
       return System as any;
+    },
+    update(time = performance.now()) {
+      rig.ecs.updateTime(time);
+      rig.ecs.resolveEntities();
+      rig.ecs.runSystems();
     },
   };
 

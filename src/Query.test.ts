@@ -3,20 +3,20 @@ import { Query } from './Query';
 
 describe('Query', () => {
   it('should instantiate without crashing', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       expect(
         () =>
           new Query({
             ecsInstance: rig.ecs,
             needed: [Foo],
-          })
+          }),
       ).not.toThrow();
     });
   });
 
   it('should be able to test validity by id', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const entity = rig.ecs.createEntity();
@@ -31,7 +31,7 @@ describe('Query', () => {
   });
 
   it('should be able to test invalidity by id', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const Bar = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
@@ -51,7 +51,7 @@ describe('Query', () => {
   });
 
   it('should be able to validateById', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const Bar = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
@@ -72,7 +72,7 @@ describe('Query', () => {
   });
 
   it('should be able to get components', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       const Bar = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
