@@ -74,7 +74,7 @@ export class Query<
       const entity = entities.get(e);
       if (!entity) continue;
       for (let i = this._unwanted.length; i--; ) {
-        if (this._ecsInstance.hasComponentOfType(entity, this._unwanted[i]))
+        if (this._ecsInstance.hasComponent(entity, this._unwanted[i]))
           continue entityLoop;
       }
       const components: any[] = [];
@@ -106,7 +106,7 @@ export class Query<
    */
   isInvalid(entity: Entity): boolean {
     for (let i = this._unwanted.length; i--; ) {
-      if (this._ecsInstance.hasComponent(entity, this._unwanted[i].type))
+      if (this._ecsInstance.hasComponentOfTypeId(entity, this._unwanted[i].type))
         return true;
     }
     return false;
@@ -119,7 +119,7 @@ export class Query<
    */
   isInvalidById(id: number): boolean {
     for (let i = this._unwanted.length; i--; ) {
-      if (this._ecsInstance.hasComponentById(id, this._unwanted[i].type))
+      if (this._ecsInstance.hasComponentByIdOfTypeId(id, this._unwanted[i].type))
         return true;
     }
     return false;
@@ -136,7 +136,7 @@ export class Query<
    */
   isValid(entity: Entity): boolean {
     for (let i = this._needed.length; i--; ) {
-      if (!this._ecsInstance.hasComponent(entity, this._needed[i].type))
+      if (!this._ecsInstance.hasComponentOfTypeId(entity, this._needed[i].type))
         return false;
     }
     return true;
@@ -149,7 +149,7 @@ export class Query<
    */
   isValidById(id: number): boolean {
     for (let i = this._needed.length; i--; ) {
-      if (!this._ecsInstance.hasComponentById(id, this._needed[i].type))
+      if (!this._ecsInstance.hasComponentByIdOfTypeId(id, this._needed[i].type))
         return false;
     }
     return true;
@@ -157,7 +157,7 @@ export class Query<
 
   isOptional(entity: Entity): boolean {
     for (let i = this._optional.length; i--; ) {
-      if (this._ecsInstance.hasComponentOfType(entity, this._optional[i]))
+      if (this._ecsInstance.hasComponent(entity, this._optional[i]))
         return true;
     }
     return false;
@@ -165,7 +165,7 @@ export class Query<
 
   isOptionalById(id: number): boolean {
     for (let i = this._optional.length; i--; ) {
-      if (this._ecsInstance.hasComponentByIdOfType(id, this._optional[i]))
+      if (this._ecsInstance.hasComponentById(id, this._optional[i]))
         return true;
     }
     return false;

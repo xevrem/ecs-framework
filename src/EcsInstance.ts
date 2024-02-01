@@ -89,11 +89,16 @@ export class EcsInstance {
    * @param entity the entity to receive the component
    * @param component the component to add
    */
-  addComponent(entity: Entity, component: Component): void {
+  addComponent<C extends Component>(entity: Entity, component: C): void {
     this.componentManager.addComponent(entity, component);
   }
 
-  addComponentById(id: number, component: Component): void {
+  /**
+   * adds the given component to the entity with the given id
+   * @param id the id of the entity to which to add the component
+   * @param component the component instance to add to the entity
+   */
+  addComponentById<C extends Component>(id: number, component: C): void {
     this.componentManager.addComponentById(id, component);
   }
 
@@ -140,64 +145,37 @@ export class EcsInstance {
   /**
    * get the component for the specified entity of the specified component class
    * @param entity the owning entity
-   * @param component the class of component to retrieve
+   * @param componentType the class of component to retrieve
    * @returns the component for the entity or `undefined` if it doesnt exist
    */
   getComponent<C extends typeof Component>(
     entity: Entity,
-    component: Option<C>,
+    componentType: Option<C>,
   ): Option<InstanceType<C>> {
-    return this.componentManager.getComponent(entity, component);
-  }
-
-  getComponentById<C extends typeof Component>(
-    id: number,
-    component: Option<C>,
-  ): Option<InstanceType<C>> {
-    return this.componentManager.getComponentById(id, component);
-  }
-
-  getComponentByTag<C extends typeof Component>(
-    tag: string,
-    component: Option<C>,
-  ): Option<InstanceType<C>> {
-    const entity = this.getEntityByTag(tag);
-    return is_some(entity)
-      ? this.componentManager.getComponent(entity, component)
-      : undefined;
-  }
-
-  /**
-   * a very useful component retrieval function
-   * @param entity entity who owns the component
-   * @param component the component type to retrieve
-   * @returns the instance of that component, if any
-   */
-  getComponentOfType<C extends typeof Component>(
-    entity: Entity,
-    component: Option<C>,
-  ): Option<InstanceType<C>> {
-    return this.getComponentOfType(entity, component);
+    return this.componentManager.getComponent(entity, componentType);
   }
 
   /**
    * a very useful component retrieval function
    * @param id id of entity who owns the component
-   * @param component the component type to retrieve
+   * @param componentType the component type to retrieve
    * @returns the instance of that component, if any
    */
-  getComponentOfTypeById<C extends typeof Component>(
+  getComponentById<C extends typeof Component>(
     id: number,
-    component: Option<C>,
+    componentType: Option<C>,
   ): Option<InstanceType<C>> {
-    return this.getComponentById(id, component);
+    return this.componentManager.getComponentById(id, componentType);
   }
 
-  getComponentOfTypeByTag<C extends typeof Component>(
+  getComponentByTag<C extends typeof Component>(
     tag: string,
-    component: Option<C>,
+    componentType: Option<C>,
   ): Option<InstanceType<C>> {
-    return this.getComponentByTag(tag, component);
+    const entity = this.getEntityByTag(tag);
+    return is_some(entity)
+      ? this.componentManager.getComponent(entity, componentType)
+      : undefined;
   }
 
   /**
@@ -206,11 +184,11 @@ export class EcsInstance {
    * @param typeId the numeric type of the component
    * @returns the instance of that component type, if any
    */
-  getComponentByTypeId<T extends typeof Component>(
+  getComponentOfTypeId<T extends typeof Component>(
     entity: Entity,
     typeId: number,
   ): Option<InstanceType<T>> {
-    return this.componentManager.getComponentByType(entity, typeId);
+    return this.componentManager.getComponentOfTypeId(entity, typeId);
   }
 
   /**
@@ -247,11 +225,11 @@ export class EcsInstance {
   /**
    * checks if the given entity has a component of the specified entity type
    * @param entity the entity to check
-   * @param type the type field of the component to check
+   * @param typeId the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponent(entity: Entity, type: number): boolean {
-    return this.componentManager.hasComponent(entity, type);
+  hasComponentOfTypeId(entity: Entity, typeId: number): boolean {
+    return this.componentManager.hasComponentOfTypeId(entity, typeId);
   }
 
   /**
@@ -260,11 +238,21 @@ export class EcsInstance {
    * @param componentType type to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentOfType<C extends typeof Component>(
+  hasComponent<C extends typeof Component>(
     entity: Entity,
     componentType: Option<C>,
   ): boolean {
-    return this.componentManager.hasComponentOfType(entity, componentType);
+    return this.componentManager.hasComponent(entity, componentType);
+  }
+
+  /**
+   * checks if the entity witht he given id has a component of the specified entity type
+   * @param id the id of the entity to check
+   * @param typeId the type field of the component to check
+   * @returns `true` if the entity has the component otherwise `false`
+   */
+  hasComponentByIdOfTypeId(id: number, typeId: number): boolean {
+    return this.componentManager.hasComponentByIdOfTypeId(id, typeId);
   }
 
   /**
@@ -273,38 +261,21 @@ export class EcsInstance {
    * @param componentType type to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentOfTypeById<C extends typeof Component>(
-    id: number,
-    componentType: C,
-  ): boolean {
-    return this.componentManager.hasComponentById(id, componentType.type);
-  }
-
-  /**
-   * checks if the entity witht he given id has a component of the specified entity type
-   * @param id the id of the entity to check
-   * @param type the type field of the component to check
-   * @returns `true` if the entity has the component otherwise `false`
-   */
-  hasComponentById(id: number, type: number): boolean {
-    return this.componentManager.hasComponentById(id, type);
-  }
-
-  hasComponentByIdOfType<C extends typeof Component>(
+  hasComponentById<C extends typeof Component>(
     id: number,
     componentType: Option<C>,
   ): boolean {
-    return this.componentManager.hasComponentByIdOfType(id, componentType);
+    return this.componentManager.hasComponentById(id, componentType);
   }
 
   /**
    * checks if the tagged entity has a component of the specified entity type
    * @param tag the tagged entity to check
-   * @param type the type field of the component to check
+   * @param typeId the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentByTag(tag: string, type: number): boolean {
-    return this.componentManager.hasComponentByTag(tag, type);
+  hasComponentByTagOfTypeId(tag: string, typeId: number): boolean {
+    return this.componentManager.hasComponentByTagOfTypeId(tag, typeId);
   }
   /**
    * checks if the tagged entity has a component of the specified entity type
@@ -312,11 +283,11 @@ export class EcsInstance {
    * @param component the componen type to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentOfTypeByTag<C extends typeof Component>(
+  hasComponentByTag<C extends typeof Component>(
     tag: string,
-    component: C,
+    component: Option<C>,
   ): boolean {
-    return this.componentManager.hasComponentOfTypeByTag(tag, component);
+    return this.componentManager.hasComponentByTag(tag, component);
   }
 
   initializeSystems(): void {
@@ -339,10 +310,10 @@ export class EcsInstance {
 
   /**
    * registeres a component with the component manager
-   * @param component the component type to register
+   * @param componentType the component type to register
    */
-  registerComponent<C extends typeof Component>(component: C): void {
-    this.componentManager.registerComponent(component);
+  registerComponent<C extends typeof Component>(componentType: C): void {
+    this.componentManager.registerComponent(componentType);
   }
 
   registerComponents(components: Record<PropertyKey, typeof Component>): void {
@@ -640,7 +611,7 @@ export class EcsInstance {
 
     if (unwanted) {
       for (let j = unwanted ? unwanted.length : 0; j--; ) {
-        if (this.hasComponentById(id, unwanted[j].type)) {
+        if (this.hasComponentByIdOfTypeId(id, unwanted[j].type)) {
           valid = false;
           break;
         }
@@ -697,7 +668,7 @@ export class EcsInstance {
 
       if (unwanted) {
         for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentById(id, unwanted[j].type)) {
+          if (this.hasComponentByIdOfTypeId(id, unwanted[j].type)) {
             valid = false;
             break;
           }
@@ -817,7 +788,7 @@ export class EcsInstance {
 
       if (unwanted) {
         for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentById(id, unwanted[j].type)) {
+          if (this.hasComponentByIdOfTypeId(id, unwanted[j].type)) {
             valid = false;
             break;
           }
@@ -878,7 +849,7 @@ export class EcsInstance {
 
       if (unwanted) {
         for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponent(entity, unwanted[j].type)) {
+          if (this.hasComponentOfTypeId(entity, unwanted[j].type)) {
             valid = false;
             break;
           }
@@ -936,7 +907,7 @@ export class EcsInstance {
 
       if (unwanted) {
         for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentById(i, unwanted[j].type)) {
+          if (this.hasComponentByIdOfTypeId(i, unwanted[j].type)) {
             valid = false;
             break;
           }

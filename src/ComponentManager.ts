@@ -125,18 +125,18 @@ export class ComponentManager {
       : undefined;
   }
 
-  getComponentByType<C extends typeof Component>(
+  getComponentOfTypeId<C extends typeof Component>(
     entity: Entity,
-    type: number,
+    typeId: number,
   ): Option<InstanceType<C>> {
-    return this._components.get(type)?.get(entity.id);
+    return this._components.get(typeId)?.get(entity.id);
   }
 
-  getComponentByTypeAndId<C extends typeof Component>(
+  getComponentByIdOfTypeId<C extends typeof Component>(
     id: number,
-    type: number,
+    typeId: number,
   ): Option<InstanceType<C>> {
-    return this._components.get(type)?.get(id);
+    return this._components.get(typeId)?.get(id);
   }
 
   /**
@@ -240,12 +240,12 @@ export class ComponentManager {
   /**
    * does the given entity have a component of the specified typeId
    * @param entity the entity to check
-   * @param type the component type to check
+   * @param typeId the component type to check
    * @returns `true` if the entity has that component, otherwise `false`
    */
-  hasComponent(entity: Entity, type: number): boolean {
-    if (type < this._components.capacity) {
-      return this._components.get(type)?.has(entity.id) ?? false;
+  hasComponentOfTypeId(entity: Entity, typeId: number): boolean {
+    if (typeId < this._components.capacity) {
+      return this._components.get(typeId)?.has(entity.id) ?? false;
     }
     return false;
   }
@@ -256,26 +256,24 @@ export class ComponentManager {
    * @param type the component type to check
    * @returns `true` if the entity has that component, otherwise `false`
    */
-  hasComponentOfType<C extends typeof Component>(
+  hasComponent<C extends typeof Component>(
     entity: Entity,
     componentType: Option<C>,
   ): boolean {
     return (
-      is_some(componentType) && this.hasComponent(entity, componentType.type)
+      is_some(componentType) &&
+      this.hasComponentOfTypeId(entity, componentType.type)
     );
   }
 
   /**
    * checks if the entity with he given id has a component of the specified typeId
    * @param id the id of the entity to check
-   * @param type the type field of the component to check
+   * @param typeId the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentById(id: number, type: number): boolean {
-    if (type < this._components.capacity) {
-      return this._components.get(type)?.has(id) ?? false;
-    }
-    return false;
+  hasComponentByIdOfTypeId(id: number, typeId: number): boolean {
+    return this._components.get(typeId)?.has(id) ?? false;
   }
 
   /**
@@ -284,25 +282,27 @@ export class ComponentManager {
    * @param type the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentByIdOfType<C extends typeof Component>(
+  hasComponentById<C extends typeof Component>(
     id: number,
     componentType: Option<C>,
   ): boolean {
     return (
-      is_some(componentType) && this.hasComponentById(id, componentType.type)
+      is_some(componentType) &&
+      this.hasComponentByIdOfTypeId(id, componentType.type)
     );
   }
 
   /**
    * checks if the tagged entity has a component of the specified entity type
    * @param tag the tagged entity to check
-   * @param type the type field of the component to check
+   * @param typeId the type field of the component to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentByTag(tag: string, type: number): boolean {
+  hasComponentByTagOfTypeId(tag: string, typeId: number): boolean {
     const entity = this._ecsInstance.getEntityByTag(tag);
-    if (!entity) return false;
-    return !!this._components.get(type)?.get(entity.id) ?? false;
+    return (
+      is_some(entity) && (this._components.get(typeId)?.has(entity.id) ?? false)
+    );
   }
 
   /**
@@ -311,10 +311,13 @@ export class ComponentManager {
    * @param component the componen type to check
    * @returns `true` if the entity has the component otherwise `false`
    */
-  hasComponentOfTypeByTag(tag: string, component: typeof Component): boolean {
-    const entity = this._ecsInstance.tagManager.getEntityByTag(tag);
-    if (!entity) return false;
-    return !!this._components.get(component.type)?.get(entity.id) ?? false;
+  hasComponentByTag<C extends typeof Component>(
+    tag: string,
+    component: Option<C>,
+  ): boolean {
+    return (
+      is_some(component) && this.hasComponentByTagOfTypeId(tag, component.type)
+    );
   }
 
   reset(): void {

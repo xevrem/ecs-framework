@@ -12,9 +12,9 @@ describe('EcsInstance', () => {
       rig.ecs.componentManager.registerComponent(Foo);
       const foo = new Foo();
       const entity = rig.ecs.createEntity();
-      expect(rig.ecs.hasComponentById(entity.id, foo.type)).toBeFalsy();
+      expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeFalsy();
       rig.ecs.addComponent(entity, foo);
-      expect(rig.ecs.hasComponentById(entity.id, foo.type)).toBeTruthy();
+      expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeTruthy();
     });
   });
 
@@ -25,9 +25,9 @@ describe('EcsInstance', () => {
       const foo = new Foo();
       const entity = rig.ecs.createEntity();
       rig.ecs.addComponent(entity, foo);
-      expect(rig.ecs.hasComponentByTag('tag', foo.type)).toBeFalsy();
+      expect(rig.ecs.hasComponentByTagOfTypeId('tag', foo.type)).toBeFalsy();
       rig.ecs.tagManager.tagEntity('tag', entity);
-      expect(rig.ecs.hasComponentByTag('tag', foo.type)).toBeTruthy();
+      expect(rig.ecs.hasComponentByTagOfTypeId('tag', foo.type)).toBeTruthy();
     });
   });
 
@@ -38,7 +38,7 @@ describe('EcsInstance', () => {
       const foo = new Foo();
       const entity = rig.ecs.createEntity();
       rig.ecs.addComponent(entity, foo);
-      expect(rig.ecs.hasComponentById(entity.id, foo.type)).toBeTruthy();
+      expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeTruthy();
       const mapper = rig.ecs.makeMapper(Foo);
       const component = mapper.get(entity);
       expect(component).toEqual(foo);

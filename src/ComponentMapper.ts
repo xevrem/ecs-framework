@@ -20,7 +20,7 @@ export class ComponentMapper<T extends Component> {
    * @returns the component if found, otherwise `undefined`
    */
   get(entity: Entity): T {
-    return this._ecsInstance.componentManager.getComponentByType(
+    return this._ecsInstance.componentManager.getComponentOfTypeId(
       entity,
       this._type
     ) as T;
@@ -35,7 +35,7 @@ export class ComponentMapper<T extends Component> {
   }
 
   getById(id: number): T {
-    return this._ecsInstance.componentManager.getComponentByTypeAndId(
+    return this._ecsInstance.componentManager.getComponentByIdOfTypeId(
       id,
       this._type
     ) as T;

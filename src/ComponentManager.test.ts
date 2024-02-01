@@ -89,20 +89,20 @@ describe('ComponentManager', () => {
       rig.ecs.componentManager.addComponent(entity, foo);
       rig.ecs.tagManager.tagEntity('tag', entity);
       expect(
-        rig.ecs.componentManager.hasComponent(entity, foo.type)
+        rig.ecs.componentManager.hasComponentOfTypeId(entity, foo.type)
       ).toBeTruthy();
       expect(
-        rig.ecs.componentManager.hasComponent(entity, Bar.type)
+        rig.ecs.componentManager.hasComponentOfTypeId(entity, Bar.type)
       ).toBeFalsy();
       expect(
-        rig.ecs.componentManager.hasComponentById(entity.id, foo.type)
+        rig.ecs.componentManager.hasComponentByIdOfTypeId(entity.id, foo.type)
       ).toBeTruthy();
       expect(
-        rig.ecs.componentManager.hasComponentById(entity.id, Bar.type)
+        rig.ecs.componentManager.hasComponentByIdOfTypeId(entity.id, Bar.type)
       ).toBeFalsy();
       expect(rig.ecs.tagManager.getEntityByTag('tag')).toEqual(entity);
       expect(
-        rig.ecs.componentManager.hasComponentByTag('tag', foo.type)
+        rig.ecs.componentManager.hasComponentByTagOfTypeId('tag', foo.type)
       ).toBeTruthy();
     });
   });
