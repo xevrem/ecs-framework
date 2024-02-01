@@ -2,16 +2,15 @@
   "name": "ecsf",
   "version": "1.0.14",
   "description": "Entity Component System Framework for JavaScript",
-  "source": "src/index.ts",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build:clean": "rm -rf dist;mkdir dist",
-    "build:source": "tsc --build ./build-tsconfig.json",
+    "build:source": "tsc -p tsconfig.build.json",
     "build:post": "cp -r ./src/types dist/.",
     "build": "npm run build:clean;npm run build:source;npm run build:post",
-    "check": "tsc --watch --noEmit --pretty -p dev-tsconfig.json",
-    "test": "jest --watch"
+    "check": "tsc --watch --noEmit --pretty -p tsconfig.dev.json",
+    "test": "jest --watch --workerThreads --maxWorkers=40%"
   },
   "repository": {
     "type": "git",
@@ -32,17 +31,17 @@
     "url": "https://github.com/xevrem/ecs-framework/issues"
   },
   "homepage": "https://github.com/xevrem/ecs-framework",
+  "dependencies": {
+    "onsreo": "^1.0.6"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.11",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "eslint": "^8.49.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
     "jest": "^29.7.0",
-    "prettier": "^2.8.4",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "onsreo": "^1.0.4"
+    "prettier": "^3.2.4",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
   }
 }

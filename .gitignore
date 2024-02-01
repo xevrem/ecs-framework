@@ -69,5 +69,5 @@ package-lock.json
 
 
 # ts build related
-/build
+/dist
 /src/**/*.test.js
