@@ -1,4 +1,4 @@
-import { Option, is_none, is_some } from 'onsreo';
+import { type Option, is_some } from 'onsreo';
 import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';

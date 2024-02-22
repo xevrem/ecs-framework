@@ -9,7 +9,7 @@ import { Scheduler } from './Scheduler';
 import { EntitySystem } from './EntitySystem';
 import { Bag } from './Bag';
 import { makeEntityBuilder } from './EntityBuilder';
-import { FuncQuery } from './FuncQuery';
+import { FuncQuery, type QueryFunc } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component, isComponent } from './Component';
 import {
@@ -22,7 +22,6 @@ import {
   SmartResolve,
   SmartUpdate,
   EntityBuilder,
-  QueryFunc,
   EntitySystemArgs,
   SystemRegistrationArgs,
 } from './types';
@@ -1087,8 +1086,8 @@ export class EcsInstance {
 
   withSystem<
     T extends ComponentTuple,
-    V extends ComponentOptionTuple,
-    W extends ComponentTuple,
+    V extends ComponentOptionTuple = [],
+    W extends ComponentTuple = [],
   >(
     data: [needed: [...T], optional?: [...V], unwanted?: [...W]],
     queryFunc: QueryFunc<T, V, W>,

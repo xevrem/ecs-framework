@@ -8,7 +8,7 @@ import {
   JoinedData,
   JoinedQuery,
   JoinedResult,
-} from 'types';
+} from './types';
 
 export declare interface QueryArgs<
   T extends ComponentTuple = ComponentTuple,
@@ -106,7 +106,9 @@ export class Query<
    */
   isInvalid(entity: Entity): boolean {
     for (let i = this._unwanted.length; i--; ) {
-      if (this._ecsInstance.hasComponentOfTypeId(entity, this._unwanted[i].type))
+      if (
+        this._ecsInstance.hasComponentOfTypeId(entity, this._unwanted[i].type)
+      )
         return true;
     }
     return false;
@@ -119,7 +121,9 @@ export class Query<
    */
   isInvalidById(id: number): boolean {
     for (let i = this._unwanted.length; i--; ) {
-      if (this._ecsInstance.hasComponentByIdOfTypeId(id, this._unwanted[i].type))
+      if (
+        this._ecsInstance.hasComponentByIdOfTypeId(id, this._unwanted[i].type)
+      )
         return true;
     }
     return false;

@@ -1,7 +1,7 @@
 import { None, Option, Some } from 'onsreo';
-import { Entity } from 'Entity';
-import { Component } from 'Component';
-import { InstanceOf, ComponentOptionTypes, ComponentTypes } from 'types';
+import { Entity } from '../Entity';
+import { Component } from '../Component';
+import { InstanceOf, ComponentOptionTypes, ComponentTypes } from '../types';
 
 export declare type ComponentTuple = [...ComponentTypes];
 export declare type ComponentOptionTuple = [...ComponentOptionTypes];
