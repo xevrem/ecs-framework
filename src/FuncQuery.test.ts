@@ -1,14 +1,27 @@
+import { Component } from 'Component';
 import ecsRig from 'EcsRig';
 import { is_some } from 'onsreo';
 
 describe('FuncQuery', () => {
   it('should handle running Functional Systems', () => {
     ecsRig(rig => {
-      const Foo = rig.makeComponentType();
+      // const Foo = rig.makeComponentType();
+      // const Bar = rig.makeComponentType();
+      class Foo extends Component {
+        data!: number;
+      }
+      class Bar extends Component {
+        data!: string;
+      }
+      rig.ecs.registerComponent(Foo);
+      rig.ecs.registerComponent(Bar);
 
-      rig.ecs.withSystem([Foo], ({ query }) => {
-        for (const [foo] of query.join()) {
+      rig.ecs.withSystem([[Foo], [Bar]], ({ query }) => {
+        for (const [[foo, bar], _entity] of query.join()) {
           foo.data = 42;
+          if (is_some(bar)) {
+            bar.data = 'oh hi';
+          }
         }
       });
 

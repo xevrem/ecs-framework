@@ -90,10 +90,21 @@ class FooSystem extends EntitySystem<any, Needed, Optional> {
  * for now, functional systems are `needed` components only. 
  * this will support `optional` and `unwanted` components later.
  */
-ecs.withSystem([Foo], ({query}) => {
-  for (const [foo] of query.join()) {
-    // foo is defined, so we can work on it
+ecs.withSystem([[NeededComponent], [OptionalComponent], [UnwantedComponent]], ({query}) => {
+  // components are returned in order of definition.
+  // optional components come after needed components
+  // obviously, unwanted components are never returned
+  for (const [[foo, bar], entity] of query.join()) {
+    // foo is defined, is of type `NeededComponent`, so we can work on it
     foo.myDataProp += 22;
+    
+    // since bar is optional (i.e., of type `Option<OptionalComponent>`), 
+    // we need to test for it    
+    if(is_some(bar)){
+      // bar exists and is of type `OptionalComponent` on this entity
+    }else {
+      // bar does not exist on this entity
+    }
   }
 });
 ```
@@ -112,6 +123,17 @@ ecs.registerSystem(FooSystem, {
    * you can also add your own props to pass to a system here
    */
 });
+
+/*
+ * for reactive systems you need to explitly state they are updated
+ * in the future we will see if an Observable method is doable without
+ * too much of a performance penalty
+ */
+
+// for example, lets say `component` is of type `Foo`
+ecs.update(component); 
+// now all reactive systems that have `Foo` as `needed` or `optional`
+// will be run on the next update cycle.
 ```
 
 ## how the ecs instance fits into the `game loop`

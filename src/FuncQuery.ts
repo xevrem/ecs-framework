@@ -1,16 +1,33 @@
 import { EcsInstance } from 'EcsInstance';
-import { ComponentTuple, OrderedComponentTuple } from 'types';
+import { ComponentOptionTuple, ComponentTuple, JoinedResult } from 'types';
 
-export class FuncQuery<T extends ComponentTuple> {
+export class FuncQuery<
+  T extends ComponentTuple,
+  V extends ComponentOptionTuple = [],
+  W extends ComponentTuple = [],
+> {
   ecs: EcsInstance;
-  data: [...T];
+  needed: [...T];
+  optional: [...V];
+  unwanted: [...W];
 
-  constructor(ecs: EcsInstance, data: [...T]) {
+  constructor(
+    ecs: EcsInstance,
+    needed: [...T],
+    optional: [...V] = [] as any,
+    unwanted: [...W] = [] as any,
+  ) {
     this.ecs = ecs;
-    this.data = data;
+    this.needed = needed;
+    this.optional = optional;
+    this.unwanted = unwanted;
   }
 
-  join(): IterableIterator<OrderedComponentTuple<T>> {
-    return this.ecs.query<T>(this.data);
+  join(): IterableIterator<JoinedResult<T, V>> {
+    return this.ecs.joinAll<T, V, W>(
+      [...this.needed],
+      [...this.optional],
+      [...this.unwanted],
+    );
   }
 }

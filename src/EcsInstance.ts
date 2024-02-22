@@ -27,6 +27,15 @@ import {
   SystemRegistrationArgs,
 } from './types';
 
+export declare type FunctionalQuerySystem = [
+  func: (params: {
+    query: FuncQuery<any, any, any>;
+    ecs: EcsInstance;
+    delta: number;
+  }) => void,
+  funcQuery: FuncQuery<any, any, any>,
+];
+
 export class EcsInstance {
   entityManager: EntityManager;
   componentManager: ComponentManager;
@@ -44,6 +53,7 @@ export class EcsInstance {
   private _lastTime: number;
   private _elapsed: number;
   private _destroyed = false;
+  private _functionalSystems: FunctionalQuerySystem[] = [];
 
   constructor() {
     this.entityManager = new EntityManager();
@@ -1075,31 +1085,27 @@ export class EcsInstance {
     return;
   }
 
-  qSysTuple: [
-    func: (params: {
-      query: FuncQuery<any>;
-      ecs: EcsInstance;
-      delta: number;
-    }) => void,
-    // data: ComponentTuple,
-    funcQuery: FuncQuery<any>,
-  ][] = [];
-
-  withSystem<T extends ComponentTuple>(
-    data: [...T],
-    queryFunc: QueryFunc<T>,
+  withSystem<
+    T extends ComponentTuple,
+    V extends ComponentOptionTuple,
+    W extends ComponentTuple,
+  >(
+    data: [needed: [...T], optional?: [...V], unwanted?: [...W]],
+    queryFunc: QueryFunc<T, V, W>,
   ): void {
-    this.qSysTuple.push([queryFunc, new FuncQuery(this, data)]);
+    this._functionalSystems.push([
+      queryFunc,
+      new FuncQuery<T, V, W>(this, data[0], data?.[1], data?.[2]),
+    ]);
   }
 
   runQuerySystems(): void {
-    for (let i = 0; i < this.qSysTuple.length; i++) {
-      const [func, query] = this.qSysTuple[i];
+    this._functionalSystems.forEach(([func, query]) =>
       func({
         query,
         ecs: this,
         delta: this._delta,
-      });
-    }
+      }),
+    );
   }
 }
