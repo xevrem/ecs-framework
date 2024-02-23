@@ -22,22 +22,22 @@ export declare interface QueryArgs<
 }
 
 export class Query<
-  T extends ComponentTuple = ComponentTuple,
-  V extends ComponentOptionTuple = ComponentOptionTuple,
-  W extends ComponentTuple = ComponentTuple,
+  Needed extends ComponentTuple = [],
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
 > {
   private _ecsInstance: EcsInstance;
-  private _needed: [...T];
-  private _optional: [...V];
-  private _unwanted: [...W];
-  private _data: JoinedQuery<T, V>[];
+  private _needed: [...Needed];
+  private _optional: [...Optional];
+  private _unwanted: [...Unwanted];
+  private _data: JoinedQuery<Needed, Optional>[];
   private _entity!: Entity;
 
-  constructor(props: QueryArgs<T, V, W>) {
+  constructor(props: QueryArgs<Needed, Optional, Unwanted>) {
     this._ecsInstance = props.ecsInstance;
     this._needed = props.needed;
-    this._optional = props.optional || ([] as any);
-    this._unwanted = props.unwanted || ([] as any);
+    this._optional = props.optional || ([] as unknown as [...Optional]);
+    this._unwanted = props.unwanted || ([] as unknown as [...Unwanted]);
     this._data = [];
   }
 
@@ -48,7 +48,7 @@ export class Query<
     return this._needed;
   }
 
-  get data(): JoinedQuery<T, V>[] {
+  get data(): JoinedQuery<Needed, Optional>[] {
     return this._data;
   }
 
@@ -95,7 +95,7 @@ export class Query<
         );
         components.push(component);
       }
-      this._data.push([components, entity] as JoinedQuery<T, V>);
+      this._data.push([components, entity] as JoinedQuery<Needed, Optional>);
     }
   }
 
@@ -227,14 +227,14 @@ export class Query<
     return this._ecsInstance.joinAll(needed, optional, unwanted);
   }
 
-  retrieve(): JoinedData<T, V> {
+  retrieve(): JoinedData<Needed, Optional> {
     return this._ecsInstance.retrieve(this._entity, [
       ...this._needed,
       ...this._optional,
     ]);
   }
 
-  retrieveById(id: number): JoinedData<T, V> {
+  retrieveById(id: number): JoinedData<Needed, Optional> {
     return this._ecsInstance.retrieveById(id, [
       ...this._needed,
       ...this._optional,

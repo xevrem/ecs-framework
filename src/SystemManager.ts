@@ -1,20 +1,20 @@
 import { EcsInstance } from './EcsInstance';
-import { EntitySystem } from './EntitySystem';
+import {
+  AnySystem,
+  type EntitySystemArgs,
+  type SystemRegistrationArgs,
+} from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import {
-  EntitySystemArgs,
-  SmartResolve,
-  SmartUpdate,
-  SystemRegistrationArgs,
-} from './types';
+import { SmartResolve, SmartUpdate } from './types';
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
-  private _staticSystems: EntitySystem<any, any, any, any>[];
-  private _reactiveSystems: EntitySystem<any, any, any, any>[];
-  private _systemTypes: Record<string, EntitySystem<any, any, any, any>> = {};
-  private _systems!: EntitySystem<any, any, any, any>[];
+  private _staticSystems: AnySystem[];
+  private _reactiveSystems: AnySystem[];
+  private _systemTypes: Record<string, AnySystem> =
+    {};
+  private _systems!: AnySystem[];
   private _nextId: number;
 
   constructor(ecsInstance: EcsInstance) {
@@ -28,7 +28,7 @@ export class SystemManager {
    * an array of the currently managed systems
    * memoized on startup
    */
-  get systems(): EntitySystem<any, any, any, any>[] {
+  get systems(): AnySystem[] {
     if (this._systems) return this._systems;
     this._systems = this._staticSystems.concat(this._reactiveSystems);
     return this._systems;
@@ -40,8 +40,8 @@ export class SystemManager {
    * @param name class name of the registered system
    * @returns the registered system with the given name
    */
-  getSystemByTypeName<T extends EntitySystem<any, any, any, any>>(
-    name: string
+  getSystemByTypeName<T extends AnySystem>(
+    name: string,
   ): T {
     return this._systemTypes[name] as T;
   }
@@ -55,8 +55,8 @@ export class SystemManager {
   registerSystem<
     Props,
     SysArgs extends SystemRegistrationArgs<Props>,
-    EsArgs extends EntitySystemArgs<Props, any, any, any>,
-    Sys extends EntitySystem<Props, any, any, any>
+    EsArgs extends EntitySystemArgs<Props, any, any, any, any>,
+    Sys extends AnySystem<Props>,
   >(System: new (args: EsArgs) => Sys, args: SysArgs): Sys {
     const props: EsArgs = {
       id: this._nextId++,

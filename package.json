@@ -8,8 +8,10 @@
     "build:clean": "rm -rf dist;mkdir dist",
     "build:source": "tsc -p tsconfig.build.json",
     "build:post": "cp -r ./src/types dist/.",
-    "build": "npm run build:clean;npm run build:source;npm run build:post",
+    "build": "npm run build:clean;npm run build:check;npm run build:source;npm run build:post",
     "check": "tsc --watch --noEmit --pretty -p tsconfig.dev.json",
+    "check:all": "tsc --watch --noEmit --pretty -p tsconfig.json",
+    "check:build": "tsc --noEmit --pretty -p tsconfig.build.json",
     "test": "jest --watch --workerThreads --maxWorkers=40%"
   },
   "repository": {

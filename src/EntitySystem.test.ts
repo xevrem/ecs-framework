@@ -1,10 +1,9 @@
 /*eslint no-empty-function: off*/
-import { EntitySystemArgs } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import ecsRig from './EcsRig';
 import { Entity } from './Entity';
-import { EntitySystem } from './EntitySystem';
+import { EntitySystem, type EntitySystemArgs } from './EntitySystem';
 import { Query } from './Query';
 
 describe('EntitySystem', () => {
@@ -31,13 +30,25 @@ describe('EntitySystem', () => {
     }
     begin(): void {}
     end(): void {}
-    process(_entity: Entity, _query: Query, _delta: number): void {}
+    process(
+      _entity: Entity,
+      _query: Query<
+        typeof this.needed,
+        typeof this.optional,
+        typeof this.unwanted
+      >,
+      _delta: number,
+    ): void {}
   }
+
+  beforeEach(() => {
+    TestSystem.id = -1;
+  });
 
   it('should instantiate without crashing', () => {
     ecsRig(rig => {
       expect(() =>
-        rig.ecs.systemManager.registerSystem(TestSystem, {})
+        rig.ecs.systemManager.registerSystem(TestSystem, {}),
       ).not.toThrow();
     });
   });
@@ -49,6 +60,16 @@ describe('EntitySystem', () => {
       rig.ecs.systemManager.initializeSystems();
       expect(spy).toHaveBeenCalled();
     });
+  });
+
+  it('should handle id assignment and recall', () => {
+    ecsRig(rig => {
+      expect(TestSystem.id).toEqual(-1);
+      const system = rig.ecs.systemManager.registerSystem(TestSystem, {});
+      expect(TestSystem.id).not.toEqual(-1);
+      expect(system.id).not.toEqual(-1);
+      expect(system.id).toEqual(TestSystem.id);
+    }, 4);
   });
 
   it('should handle loading', () => {

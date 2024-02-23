@@ -6,9 +6,13 @@ import { TagManager } from './TagManager';
 import { GroupManager } from './GroupManager';
 import { ComponentMapper } from './ComponentMapper';
 import { Scheduler } from './Scheduler';
-import { EntitySystem } from './EntitySystem';
+import {
+  AnySystem,
+  EntitySystemArgs,
+  SystemRegistrationArgs,
+} from './EntitySystem';
 import { Bag } from './Bag';
-import { makeEntityBuilder } from './EntityBuilder';
+import { makeEntityBuilder, type EntityBuilder } from './EntityBuilder';
 import { FuncQuery, type QueryFunc } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component, isComponent } from './Component';
@@ -21,9 +25,6 @@ import {
   OrderedComponentTuple,
   SmartResolve,
   SmartUpdate,
-  EntityBuilder,
-  EntitySystemArgs,
-  SystemRegistrationArgs,
 } from './types';
 
 export declare type FunctionalQuerySystem = [
@@ -337,7 +338,7 @@ export class EcsInstance {
     Props,
     SysArgs extends SystemRegistrationArgs<Props>,
     EsArgs extends EntitySystemArgs<Props, any, any, any>,
-    Sys extends EntitySystem<Props, any, any, any>,
+    Sys extends AnySystem<Props>,
   >(System: new (args: EsArgs) => Sys, args: SysArgs): Sys {
     return this.systemManager.registerSystem(System, args);
   }
@@ -900,9 +901,9 @@ export class EcsInstance {
    *
    */
   *joinAll<
-    T extends ComponentTuple,
-    V extends ComponentOptionTuple,
-    W extends ComponentTuple,
+    T extends ComponentTuple = [],
+    V extends ComponentOptionTuple = [],
+    W extends ComponentTuple = [],
   >(
     needed?: [...T],
     optional?: [...V],

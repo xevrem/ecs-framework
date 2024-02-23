@@ -1,13 +1,9 @@
-import {
-  ComponentOptionTuple,
-  ComponentTuple,
-  EntitySystemArgs,
-} from './types';
+import { ComponentOptionTuple, ComponentTuple } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
-import { EntitySystem } from './EntitySystem';
+import { EntitySystem, type EntitySystemArgs } from './EntitySystem';
 import { Query } from './Query';
 
 class Bar<T> extends Component {
@@ -43,7 +39,10 @@ export declare interface EcsRig {
 
 export declare type EcsRigCallback = (rig: EcsRig) => void;
 
-export default function ecsRig(callback: EcsRigCallback): void {
+export default function ecsRig(
+  callback: EcsRigCallback,
+  assertions: number = -1,
+): void {
   const rig: EcsRig = {
     ecs: new EcsInstance(),
     init() {
@@ -83,7 +82,15 @@ export default function ecsRig(callback: EcsRigCallback): void {
         reset(): void {}
         begin(): void {}
         end(): void {}
-        process(_entity: Entity, _query: Query, _delta: number): void {}
+        process(
+          _entity: Entity,
+          _query: Query<
+            typeof this.needed,
+            typeof this.optional,
+            typeof this.unwanted
+          >,
+          _delta: number,
+        ): void {}
       }
       return System as any;
     },
@@ -104,6 +111,9 @@ export default function ecsRig(callback: EcsRigCallback): void {
     console.error('ERROR encountered in ecsRig callback:', error);
     throw error;
   } finally {
+    if (assertions > 0) {
+      expect.assertions(assertions);
+    }
     destroy();
   }
 }

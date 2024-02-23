@@ -1,19 +1,19 @@
 import { EntitySystem } from './EntitySystem';
 
 export class Scheduler {
-  private _systems: EntitySystem<any, any, any, any>[] = [];
+  private _systems: EntitySystem<any, any, any, any, any>[] = [];
 
   /**
    * currently scheduled systems
    */
-  get systems(): EntitySystem<any, any, any, any>[] {
+  get systems(): EntitySystem<any, any, any, any, any>[] {
     return this._systems;
   }
 
   /**
    * set the scheduled systems
    */
-  set systems(value: EntitySystem<any, any, any, any>[]) {
+  set systems(value: EntitySystem<any, any, any, any, any>[]) {
     this._systems = value;
   }
 
@@ -30,11 +30,17 @@ export class Scheduler {
   sortSystems(): void {
     this._systems.sort(
       (
-        a: EntitySystem<any, any, any, any>,
-        b: EntitySystem<any, any, any, any>
-      ) => b.priority - a.priority
+        a: EntitySystem<any, any, any, any, any>,
+        b: EntitySystem<any, any, any, any, any>,
+      ) => b.priority - a.priority,
     );
   }
+
+  determineDependants(system: EntitySystem<any, any, any, any, any>) {}
+
+  determineDependencies(system: EntitySystem<any, any, any, any, any>) {}
+
+  planSystems(): void {}
 
   /**
    * run the systems in order of priority

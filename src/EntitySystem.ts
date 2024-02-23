@@ -1,3 +1,4 @@
+import { Option } from 'onsreo';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
 import { EcsInstance } from './EcsInstance';
@@ -7,41 +8,101 @@ import {
   ComponentTuple,
   JoinedResult,
   SmartUpdate,
-  EntitySystemArgs,
 } from './types';
+
+export declare type AnySystemType<Props = any> = typeof EntitySystem<
+  Props,
+  any,
+  any,
+  any,
+  any
+>;
+export declare type AnySystem<Props = any> = EntitySystem<
+  Props,
+  any,
+  any,
+  any,
+  any
+>;
+
+export declare type SystemRegistrationArgs<Props = any> = {
+  reactive?: Option<boolean>;
+  priority?: Option<number>;
+} & {
+  [Key in keyof Props]: Props[Key];
+};
+
+export declare type EntitySystemArgs<
+  Props = any,
+  Needed extends ComponentTuple = [],
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
+  Mutated extends ComponentTuple = [],
+> = SystemRegistrationArgs<Props> & {
+  id: number;
+  ecsInstance: EcsInstance;
+  needed: [...Needed];
+  optional?: [...Optional];
+  unwanted?: [...Unwanted];
+  mutated?: [...Mutated];
+};
 
 export class EntitySystem<
   Props = any,
-  T extends ComponentTuple = [],
-  V extends ComponentOptionTuple = [],
-  W extends ComponentTuple = [],
+  Needed extends ComponentTuple = [],
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
+  Mutated extends ComponentTuple = [],
 > {
+  static id = -1;
+  static _before: AnySystemType[];
+  static _after: AnySystemType[];
+
   private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();
   private _ecsInstance: EcsInstance;
   private _priority: number;
-  private _query!: Query<T, V, W>;
+  private _query!: Query<Needed, Optional, Unwanted>;
   private _active = true;
   private _dirty = false;
-  protected reactive = false;
-  props: EntitySystemArgs<Props, T, V, W>;
-  needed!: [...T];
-  optional!: [...V];
-  unwanted!: [...W];
 
-  constructor(props: EntitySystemArgs<Props, T, V, W>) {
+  protected reactive = false;
+
+  props: EntitySystemArgs<Props, Needed, Optional, Unwanted, Mutated>;
+  needed!: [...Needed];
+  optional!: [...Optional];
+  unwanted!: [...Unwanted];
+  mutated!: [...Mutated];
+
+  static before(ids: AnySystemType[]) {
+    // const inst = this.constructor as AnySystemType;
+    this._before = ids;
+  }
+
+  static after(ids: AnySystemType[]) {
+    // const inst = this.constructor as AnySystemType;
+    this._after = ids;
+  }
+
+  constructor(
+    props: EntitySystemArgs<Props, Needed, Optional, Unwanted, Mutated>,
+  ) {
+    const inst = this.constructor as AnySystemType;
+    inst.id = props.id;
+
     this.props = props;
-    this._id = props.id;
     this._ecsInstance = props.ecsInstance;
     this.reactive = props.reactive || false;
     this._priority = props.priority || 0;
     this.needed = props.needed;
-    this.optional = props.optional || ([] as unknown as [...V]);
-    this.unwanted = props.unwanted || ([] as unknown as [...W]);
+    this.optional = props.optional || ([] as unknown as [...Optional]);
+    this.unwanted = props.unwanted || ([] as unknown as [...Unwanted]);
+    this.mutated = props.mutated || ([] as unknown as [...Mutated]);
   }
 
   get id(): number {
-    return this._id;
+    const inst = this.constructor as AnySystemType;
+    return inst.id;
   }
 
   get ecs(): EcsInstance {
@@ -68,7 +129,7 @@ export class EntitySystem<
     return this._priority;
   }
 
-  get query(): Query<T, V, W> {
+  get query(): Query<Needed, Optional, Unwanted> {
     return this._query;
   }
 
@@ -80,15 +141,7 @@ export class EntitySystem<
     return this._dirty;
   }
 
-  get componentTypes(): [...T, ...V, ...W] {
-    // let result: [...T,...V,...W] = this.needed;
-    // if (this.optional) {
-    //   let foo = result.concat(this.optional);
-    //   result = foo;
-    // }
-    // if (this.unwanted) {
-    //   result = result.concat(this.unwanted);
-    // }
+  get componentTypes(): [...Needed, ...Optional, ...Unwanted] {
     return [...this.needed, ...this.optional, ...this.unwanted];
   }
 
@@ -107,11 +160,11 @@ export class EntitySystem<
   }
 
   buildQuery(): void {
-    this._query = new Query<T, V, W>({
+    this._query = new Query<Needed, Optional, Unwanted>({
       ecsInstance: this._ecsInstance,
       needed: this.needed,
-      unwanted: this.unwanted || ([] as any),
       optional: this.optional || ([] as any),
+      unwanted: this.unwanted || ([] as any),
     });
   }
 
@@ -310,13 +363,17 @@ export class EntitySystem<
   reset?(): void;
   begin?(): void;
   end?(): void;
-  process?(entity: Entity, query: Query<T, V, W>, delta: number): void;
+  process?(
+    entity: Entity,
+    query: Query<Needed, Optional, Unwanted>,
+    delta: number,
+  ): void;
   /**
    * alternate to `process`, but auto-retrieves all needed/optional components
    * for entities in a very efficient data structure. Components are returned in
    * the exact order of the `needed` array followed by `optional` array
    */
-  join?(result: JoinedResult<T, V>): void;
+  join?(result: JoinedResult<Needed, Optional>): void;
   /**
    * called for static systems when a given entity it owns has a component update
    */

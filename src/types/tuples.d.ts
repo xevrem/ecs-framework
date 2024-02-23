@@ -10,24 +10,12 @@ export declare type OrderedComponentTuple<T extends ComponentTuple> = {
   [P in keyof T]: InstanceOf<T[P]>; // ? Comp : undefined;
 };
 
-// export declare type OrderedComponentTuple<
-//   T extends Component,
-//   U extends InstanceOf<T> = InstanceOf<T>,
-//   V extends U[] = U[],
-// > = Tuple<U, V>;
-
 export declare type OrderedComponentOptionTuple<
   T extends ComponentOptionTuple,
 > = {
   // [P in keyof U]: U[P] extends Option<infer O> ? Option<O> : U[P];
   [P in keyof T]: T[P] extends Option<infer O> ? Option<InstanceOf<O>> : T[P];
 };
-
-// export declare type OrderedComponentOptionTuple<
-//   T extends typeof Component,
-//   U extends InstanceOf<T> = InstanceOf<T>,
-//   V extends U[] = U[],
-// > = OptionTuple<U, V>;
 
 export declare type OrderedComponentSomeTuple<T extends ComponentOptionTuple> =
   {
@@ -38,23 +26,11 @@ export declare type OrderedComponentSomeTuple<T extends ComponentOptionTuple> =
       : InstanceOf<Option<T[P]>>;
   };
 
-// export declare type OrderedComponentSomeTuple<
-//   T extends typeof Component,
-//   U extends InstanceOf<T> = InstanceOf<T>,
-//   V extends U[] = U[],
-// > = SomeTuple<U, V>;
-
 export declare type OrderedComponentNoneTuple<T extends ComponentOptionTuple> =
   {
     // [P in keyof U]: U[P] extends Option<any> ? None : Option<U[P]>;
     [P in keyof T]: T[P] extends Option<any> ? None : InstanceOf<Option<T[P]>>;
   };
-
-// export declare type OrderedComponentNoneTuple<
-//   T extends typeof Component,
-//   U extends InstanceOf<T> = InstanceOf<T>,
-//   V extends U[] = U[],
-// > = NoneTuple<U, V>;
 
 export declare type JoinedResult<
   T extends ComponentTuple,
