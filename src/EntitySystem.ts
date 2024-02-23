@@ -75,13 +75,13 @@ export class EntitySystem<
   mutated!: [...Mutated];
 
   static before(ids: AnySystemType[]) {
-    // const inst = this.constructor as AnySystemType;
     this._before = ids;
+    return this;
   }
 
   static after(ids: AnySystemType[]) {
-    // const inst = this.constructor as AnySystemType;
     this._after = ids;
+    return this;
   }
 
   constructor(
@@ -98,6 +98,11 @@ export class EntitySystem<
     this.optional = props.optional || ([] as unknown as [...Optional]);
     this.unwanted = props.unwanted || ([] as unknown as [...Unwanted]);
     this.mutated = props.mutated || ([] as unknown as [...Mutated]);
+  }
+
+  get _proto() {
+    const inst = this.constructor as AnySystemType;
+    return inst;
   }
 
   get id(): number {

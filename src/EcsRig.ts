@@ -39,7 +39,7 @@ export declare interface EcsRig {
 
 export declare type EcsRigCallback = (rig: EcsRig) => void;
 
-export default function ecsRig(
+export function ecsRig(
   callback: EcsRigCallback,
   assertions: number = -1,
 ): void {
@@ -117,3 +117,5 @@ export default function ecsRig(
     destroy();
   }
 }
+
+export default ecsRig;

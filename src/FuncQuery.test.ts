@@ -1,6 +1,6 @@
-import { Component } from 'Component';
-import ecsRig from 'EcsRig';
 import { is_some } from 'onsreo';
+import { Component } from './Component';
+import { ecsRig } from './EcsRig';
 
 describe('FuncQuery', () => {
   it('should handle running Functional Systems', () => {

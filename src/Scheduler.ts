@@ -1,4 +1,5 @@
-import { EntitySystem } from './EntitySystem';
+import { Component } from './Component';
+import { AnySystem, EntitySystem } from './EntitySystem';
 
 export class Scheduler {
   private _systems: EntitySystem<any, any, any, any, any>[] = [];
@@ -36,11 +37,18 @@ export class Scheduler {
     );
   }
 
-  determineDependants(system: EntitySystem<any, any, any, any, any>) {}
+  determineDependants(system: AnySystem) {
+    //
+    system.needed.forEach((component: Component) => {});
+  }
 
-  determineDependencies(system: EntitySystem<any, any, any, any, any>) {}
+  determineDependencies(system: AnySystem) {
+    //
+  }
 
-  planSystems(): void {}
+  planSystems(): void {
+    //
+  }
 
   /**
    * run the systems in order of priority
