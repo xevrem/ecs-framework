@@ -4,7 +4,6 @@ import { ComponentManager } from './ComponentManager';
 import { SystemManager } from './SystemManager';
 import { TagManager } from './TagManager';
 import { GroupManager } from './GroupManager';
-import { ComponentMapper } from './ComponentMapper';
 import { Scheduler } from './Scheduler';
 import {
   AnySystem,
@@ -12,8 +11,8 @@ import {
   SystemRegistrationArgs,
 } from './EntitySystem';
 import { Bag } from './Bag';
-import { makeEntityBuilder, type EntityBuilder } from './EntityBuilder';
-import { FuncQuery, type QueryFunc } from './FuncQuery';
+import { EntityBuilder } from './EntityBuilder';
+import { type QueryFunc } from './FuncQuery';
 import { Entity } from './Entity';
 import { Component, isComponent } from './Component';
 import {
@@ -26,15 +25,6 @@ import {
   SmartResolve,
   SmartUpdate,
 } from './types';
-
-export declare type FunctionalQuerySystem = [
-  func: (params: {
-    query: FuncQuery<any, any, any>;
-    ecs: EcsInstance;
-    delta: number;
-  }) => void,
-  funcQuery: FuncQuery<any, any, any>,
-];
 
 export class EcsInstance {
   entityManager: EntityManager;
@@ -53,7 +43,6 @@ export class EcsInstance {
   private _lastTime: number;
   private _elapsed: number;
   private _destroyed = false;
-  private _functionalSystems: FunctionalQuerySystem[] = [];
 
   constructor() {
     this.entityManager = new EntityManager();
@@ -123,7 +112,7 @@ export class EcsInstance {
   }
 
   create(): EntityBuilder {
-    return makeEntityBuilder(this);
+    return new EntityBuilder(this);
   }
 
   /**
@@ -309,16 +298,6 @@ export class EcsInstance {
   }
 
   /**
-   * makes a component mapper for the specific component type
-   * @deprecated
-   * @param component a component type to use to build the mapper
-   * @return a component mapper for the given component type
-   */
-  makeMapper<C extends Component>(component: new () => C): ComponentMapper<C> {
-    return new ComponentMapper<C>(component, this);
-  }
-
-  /**
    * registeres a component with the component manager
    * @param componentType the component type to register
    */
@@ -481,7 +460,7 @@ export class EcsInstance {
    */
   runSystems(): void {
     this.scheduler.runSystems();
-    this.runQuerySystems();
+    this.systemManager.runQuerySystems(this._delta);
   }
 
   /**
@@ -606,18 +585,19 @@ export class EcsInstance {
   }
 
   _joiner<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     entity: Entity,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): Option<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): Option<JoinedResult<Needed, Optional>> {
     const id = entity.id;
     let valid = true;
-    const result: unknown[] = [];
+    const result: OrderedComponentTuple<Needed> =
+      [] as OrderedComponentTuple<Needed>;
 
     if (unwanted) {
       for (let j = unwanted ? unwanted.length : 0; j--; ) {
@@ -632,13 +612,12 @@ export class EcsInstance {
 
     if (needed) {
       for (let j = 0; j < needed.length; j++) {
-        const gotComponents = this.componentManager.components.get(
-          needed[j].type,
-        );
-        const value = gotComponents ? gotComponents.get(id) : undefined;
+        const value = this.componentManager.components
+          .get(needed[j].type)
+          ?.get(id);
         valid = (value && valid) as boolean;
         if (!valid) break;
-        result.push(value);
+        result.push(value as any);
       }
 
       if (!valid) return null;
@@ -646,35 +625,32 @@ export class EcsInstance {
 
     if (optional) {
       for (let j = 0; j < optional.length; j++) {
-        const gotComponents = this.componentManager.components.get(
-          optional[j].type,
-        );
-        const value = gotComponents ? gotComponents.get(id) : undefined;
-        result.push(value);
+        const value = this.componentManager.components
+          .get(optional[j]?.type)
+          ?.get(id);
+        result.push(value as any);
       }
     }
 
-    if (valid) return [result, entity] as JoinedResult<T, V>;
+    if (valid) return [result, entity] as JoinedResult<Needed, Optional>;
     return null;
   }
 
   *join<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     entities: Entity[],
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
-    //   [components: [...OrderedTuple<T>, ...OrderedTuple<V>], entity: Entity]
-    // > {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = entities.length; i--; ) {
       const entity = entities[i];
       const id = entity.id;
       let valid = true;
-      const result: unknown[] = [];
+      const result: [...Needed, ...Optional] = [] as any;
 
       if (unwanted) {
         for (let j = unwanted ? unwanted.length : 0; j--; ) {
@@ -689,13 +665,12 @@ export class EcsInstance {
 
       if (needed) {
         for (let j = 0; j < needed.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            needed[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(id) : undefined;
+          const value = this.componentManager.components
+            .get(needed[j]?.type)
+            ?.get(id);
           valid = (value && valid) as boolean;
           if (!valid) break;
-          result.push(value);
+          result.push(value as any);
         }
 
         if (!valid) continue;
@@ -703,33 +678,28 @@ export class EcsInstance {
 
       if (optional) {
         for (let j = 0; j < optional.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            optional[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(id) : undefined;
-          result.push(value);
+          const value = this.componentManager.components
+            .get(optional[j]?.type)
+            ?.get(id);
+          result.push(value as any);
         }
       }
 
-      if (valid) yield [result, entity] as JoinedResult<T, V>;
-      // [
-      //     components: [...OrderedTuple<T>, ...OrderedTuple<V>],
-      //     entity: Entity
-      //   ];
+      if (valid) yield [result, entity] as JoinedResult<Needed, Optional>;
     }
     return;
   }
 
   *joinByBag<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     bag: Bag<Entity>,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = bag.length; i--; ) {
       const entity = bag.get(i);
       if (!entity) continue;
@@ -741,15 +711,15 @@ export class EcsInstance {
   }
 
   *joinByComponentBag<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     bag: Bag<Component>,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = bag.length; i--; ) {
       const component = bag.get(i);
       if (!component) continue;
@@ -763,136 +733,58 @@ export class EcsInstance {
   }
 
   *joinByGroup<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     group: string,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     const bag = this.groupManager.getGroup(group);
     if (!bag) return [];
     yield* this.joinByBag(bag, needed, optional, unwanted);
   }
 
   *joinById<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     ids: number[],
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
-    //   [components: [...OrderedTuple<T>, ...OrderedTuple<V>], entity: Entity]
-    // > {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = ids.length; i--; ) {
       const id = ids[i];
       const entity = this.getEntity(id);
       if (!entity) continue;
-      let valid = true;
-      const result: Option<Component>[] = [];
-
-      if (unwanted) {
-        for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentByIdOfTypeId(id, unwanted[j].type)) {
-            valid = false;
-            break;
-          }
-        }
-
-        if (!valid) continue;
-      }
-
-      if (needed) {
-        for (let j = 0; j < needed.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            needed[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(id) : null;
-          valid = (value && valid) as boolean;
-          if (!valid || is_none(value)) break;
-          result.push(value);
-        }
-
-        if (!valid) continue;
-      }
-
-      if (optional) {
-        for (let j = 0; j < optional.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            optional[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(id) : null;
-          result.push(value);
-        }
-      }
-
-      if (valid) yield [result, entity] as JoinedResult<T, V>;
-      // as [
-      //     [...OrderedTuple<T>, ...OrderedTuple<V>],
-      //     Entity
-      //   ];
+      const valid = this._joiner(entity, needed, optional, unwanted);
+      if (!valid) continue;
+      yield valid;
     }
     return;
   }
 
   *joinByTag<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     tags: string[],
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = tags.length; i--; ) {
       const tag = tags[i];
       const entity = this.tagManager.getEntityByTag(tag);
       if (!entity) continue;
-      let valid = true;
-      const result: unknown[] = [];
-
-      if (unwanted) {
-        for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentOfTypeId(entity, unwanted[j].type)) {
-            valid = false;
-            break;
-          }
-        }
-
-        if (!valid) continue;
-      }
-
-      if (needed) {
-        for (let j = 0; j < needed.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            needed[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(entity.id) : null;
-          valid = (value && valid) as boolean;
-          if (!valid) break;
-          result.push(value);
-        }
-
-        if (!valid) continue;
-      }
-
-      if (optional) {
-        for (let j = 0; j < optional.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            optional[j].type,
-          );
-          const value = gotComponents ? gotComponents.get(entity.id) : null;
-          result.push(value);
-        }
-      }
-
-      if (valid) yield [result, entity] as JoinedResult<T, V>;
+      const valid = this._joiner(entity, needed, optional, unwanted);
+      if (!valid) continue;
+      yield valid;
     }
     return;
   }
@@ -901,82 +793,34 @@ export class EcsInstance {
    *
    */
   *joinAll<
-    T extends ComponentTuple = [],
-    V extends ComponentOptionTuple = [],
-    W extends ComponentTuple = [],
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (let i = this.entityManager.entities.length; i--; ) {
       const entity = this.entityManager.entities.get(i);
       if (!entity) continue;
-      let valid = true;
-      const result: Option<Component>[] = [];
-
-      if (unwanted) {
-        for (let j = unwanted ? unwanted.length : 0; j--; ) {
-          if (this.hasComponentByIdOfTypeId(i, unwanted[j].type)) {
-            valid = false;
-            break;
-          }
-        }
-
-        if (!valid) continue;
-      }
-
-      if (needed) {
-        for (let j = 0; j < needed.length; j++) {
-          const gotComponents = this.componentManager.components.get(
-            needed[j].type,
-          );
-          if (gotComponents) {
-            const value = gotComponents.get(i);
-            if (value && valid) {
-              result.push(value);
-              continue;
-            } else {
-              valid = false;
-              break;
-            }
-          } else {
-            valid = false;
-            break;
-          }
-        }
-
-        if (!valid) continue;
-      }
-
-      if (optional) {
-        for (let j = 0; j < optional.length; j++) {
-          const compType = optional[j];
-          if (is_none(compType)) continue;
-          const gotComponents = this.componentManager.components.get(
-            compType.type,
-          );
-          if (is_none(gotComponents)) continue;
-          const value = gotComponents.get(i);
-          result.push(value);
-        }
-      }
-
-      if (valid) yield [result, entity] as JoinedResult<T, V>;
+      const valid = this._joiner(entity, needed, optional, unwanted);
+      if (!valid) continue;
+      yield valid;
     }
     return;
   }
 
   *joinBySet<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     set: Set<Entity>,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (const entity of set) {
       const value = this._joiner(entity, needed, optional, unwanted);
       if (value) {
@@ -986,15 +830,15 @@ export class EcsInstance {
   }
 
   *joinByComponentSet<
-    T extends ComponentTuple,
-    V extends ComponentTuple,
-    W extends ComponentTuple,
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
     set: Set<Component>,
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     for (const component of set) {
       const entity = this.getEntity(component.owner);
       if (!entity) continue;
@@ -1004,10 +848,13 @@ export class EcsInstance {
     }
   }
 
-  retrieve<T extends ComponentTuple, V extends ComponentOptionTuple>(
+  retrieve<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+  >(
     entity: Entity,
-    components: [...T, ...V],
-  ): JoinedData<T, V> {
+    components: [...Needed, ...Optional],
+  ): JoinedData<Needed, Optional> {
     const results: Option<Component>[] = [];
 
     for (let i = 0; i < components.length; i++) {
@@ -1019,13 +866,13 @@ export class EcsInstance {
       results.push(value);
     }
 
-    return results as JoinedData<T, V>;
+    return results as JoinedData<Needed, Optional>;
   }
 
-  retrieveById<T extends ComponentTuple, V extends ComponentOptionTuple>(
+  retrieveById<Optional extends ComponentOptionTuple = []>(
     id: number,
-    components: [...T, ...V],
-  ): JoinedData<T, V> {
+    components: [...Optional],
+  ): JoinedData<[], Optional> {
     const results: Option<Component>[] = [];
 
     for (let i = 0; i < components.length; i++) {
@@ -1037,36 +884,40 @@ export class EcsInstance {
       results.push(value);
     }
 
-    return results as JoinedData<T, V>;
+    return results as JoinedData<[], Optional>;
   }
 
-  retrieveByTag<T extends ComponentTuple>(
+  retrieveByTag<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+  >(
     tag: string,
-    components: [...T],
-  ): OrderedComponentOptionTuple<T> {
+    components: [...Needed, ...Optional],
+  ): OrderedComponentOptionTuple<Needed> {
     const results: Option<Component>[] = [];
     const entity = this.getEntityByTag(tag);
-    if (!entity) return results as OrderedComponentOptionTuple<T>;
+    if (!entity) return results as OrderedComponentOptionTuple<Needed>;
 
     for (let j = 0; j < components.length; j++) {
       const gotComponents = this.componentManager.components.get(
-        components[j].type,
+        components[j]?.type,
       );
       const value = gotComponents ? gotComponents.get(entity.id) : undefined;
       results.push(value);
     }
 
-    return results as OrderedComponentOptionTuple<T>;
+    return results as OrderedComponentOptionTuple<Needed>;
   }
 
-  *query<T extends ComponentTuple>(
-    needed: T,
-  ): IterableIterator<OrderedComponentTuple<T>> {
+  *query<Needed extends ComponentTuple>(
+    needed: Needed,
+  ): IterableIterator<OrderedComponentTuple<Needed>> {
     for (let i = this.entityManager.entities.length; i--; ) {
       const entity = this.entityManager.entities.get(i);
       if (!entity) continue;
       let valid = true;
-      const result: OrderedComponentTuple<T> = [] as OrderedComponentTuple<T>;
+      const result: OrderedComponentTuple<Needed> =
+        [] as OrderedComponentTuple<Needed>;
       for (let j = 0; j < needed.length; j++) {
         const components = this.componentManager.components.get(needed[j].type);
         if (components) {
@@ -1086,26 +937,32 @@ export class EcsInstance {
   }
 
   withSystem<
-    T extends ComponentTuple,
-    V extends ComponentOptionTuple = [],
-    W extends ComponentTuple = [],
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
   >(
-    data: [needed: [...T], optional?: [...V], unwanted?: [...W]],
-    queryFunc: QueryFunc<T, V, W>,
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
   ): void {
-    this._functionalSystems.push([
-      queryFunc,
-      new FuncQuery<T, V, W>(this, data[0], data?.[1], data?.[2]),
-    ]);
+    this.systemManager.withSystem(data, queryFunc);
   }
 
-  runQuerySystems(): void {
-    this._functionalSystems.forEach(([func, query]) =>
-      func({
-        query,
-        ecs: this,
-        delta: this._delta,
-      }),
-    );
+  withCreateSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this.systemManager.withCreateSystem(data, queryFunc);
   }
 }

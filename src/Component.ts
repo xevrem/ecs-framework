@@ -1,6 +1,6 @@
 export const ComponentSymbol: unique symbol = Symbol('Component');
 
-export class Component implements Component {
+export class Component {
   static type = -1;
   owner = -1;
 
@@ -40,7 +40,7 @@ export class Component implements Component {
  * confirms whether the given object is a Component Type or Component Instance
  */
 export function isComponent<T extends typeof Component | Component>(
-  object: T
+  object: T,
 ): object is T {
   if (object[ComponentSymbol]) {
     return true;
@@ -54,7 +54,7 @@ export function isComponent<T extends typeof Component | Component>(
  */
 export function isComponentOfType<T extends typeof Component | Component>(
   object: Component | typeof Component,
-  type: T
+  type: T,
 ): object is T {
   if (object.type === type.type) {
     return true;

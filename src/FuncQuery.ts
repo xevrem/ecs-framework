@@ -2,44 +2,44 @@ import { EcsInstance } from './EcsInstance';
 import { ComponentOptionTuple, ComponentTuple, JoinedResult } from './types';
 
 export declare interface QueryFuncParams<
-  T extends ComponentTuple,
-  V extends ComponentOptionTuple = [],
-  W extends ComponentTuple = [],
+  Needed extends ComponentTuple,
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
 > {
-  query: FuncQuery<T, V, W>;
+  query: FuncQuery<Needed, Optional, Unwanted>;
   ecs: EcsInstance;
   delta: number;
 }
 
 export declare type QueryFunc<
-  T extends ComponentTuple,
-  V extends ComponentOptionTuple = [],
-  W extends ComponentTuple = [],
-> = (params: QueryFuncParams<T, V, W>) => void;
+  Needed extends ComponentTuple,
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
+> = (params: QueryFuncParams<Needed, Optional, Unwanted>) => void;
 
 export class FuncQuery<
-  N extends ComponentTuple,
-  O extends ComponentOptionTuple = [],
-  U extends ComponentTuple = [],
+  Needed extends ComponentTuple,
+  Optional extends ComponentOptionTuple = [],
+  Unwanted extends ComponentTuple = [],
 > {
   ecs: EcsInstance;
-  needed: [...N];
-  optional: [...O];
-  unwanted: [...U];
+  needed: [...Needed];
+  optional: [...Optional];
+  unwanted: [...Unwanted];
 
   constructor(
     ecs: EcsInstance,
-    needed: [...N],
-    optional?: [...O],
-    unwanted?: [...U],
+    needed: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
   ) {
     this.ecs = ecs;
     this.needed = needed;
-    this.optional = optional || ([] as unknown as [...O]);
-    this.unwanted = unwanted || ([] as unknown as [...U]);
+    this.optional = optional || ([] as unknown as [...Optional]);
+    this.unwanted = unwanted || ([] as unknown as [...Unwanted]);
   }
 
-  join(): IterableIterator<JoinedResult<N, O>> {
+  join(): IterableIterator<JoinedResult<Needed, Optional>> {
     const results = this.ecs.joinAll(this.needed, this.optional, this.unwanted);
     return results;
   }

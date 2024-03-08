@@ -6,16 +6,33 @@ import {
 } from './EntitySystem';
 import { Bag } from './Bag';
 import { Entity } from './Entity';
-import { SmartResolve, SmartUpdate } from './types';
+import {
+  ComponentOptionTuple,
+  ComponentTuple,
+  SmartResolve,
+  SmartUpdate,
+} from './types';
+import { FuncQuery, type QueryFunc } from './FuncQuery';
+
+export declare type FuncQuerySysEntry = [
+  func: (params: {
+    query: FuncQuery<any, any, any>;
+    ecs: EcsInstance;
+    delta: number;
+  }) => void,
+  funcQuery: FuncQuery<any, any, any>,
+];
 
 export class SystemManager {
   private _ecsInstance: EcsInstance;
   private _staticSystems: AnySystem[];
   private _reactiveSystems: AnySystem[];
-  private _systemTypes: Record<string, AnySystem> =
-    {};
+  private _systemTypes: Record<string, AnySystem> = {};
   private _systems!: AnySystem[];
   private _nextId: number;
+  private _functionalSystems: FuncQuerySysEntry[] = [];
+  private _functionalCreateSystems: FuncQuerySysEntry[] = [];
+  private _functionalUpdateSystems: FuncQuerySysEntry[] = [];
 
   constructor(ecsInstance: EcsInstance) {
     this._ecsInstance = ecsInstance;
@@ -40,9 +57,7 @@ export class SystemManager {
    * @param name class name of the registered system
    * @returns the registered system with the given name
    */
-  getSystemByTypeName<T extends AnySystem>(
-    name: string,
-  ): T {
+  getSystemByTypeName<T extends AnySystem>(name: string): T {
     return this._systemTypes[name] as T;
   }
 
@@ -288,5 +303,84 @@ export class SystemManager {
     this._reactiveSystems = [];
     this._systemTypes = {};
     this._systems = [];
+  }
+
+  withSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this._functionalSystems.push([
+      queryFunc,
+      new FuncQuery<Needed, Optional, Unwanted>(
+        this._ecsInstance,
+        data[0],
+        data?.[1],
+        data?.[2],
+      ),
+    ]);
+  }
+
+  withCreateSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this._functionalCreateSystems.push([
+      queryFunc,
+      new FuncQuery<Needed, Optional, Unwanted>(
+        this._ecsInstance,
+        data[0],
+        data?.[1],
+        data?.[2],
+      ),
+    ]);
+  }
+
+  withUpdateSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this._functionalUpdateSystems.push([
+      queryFunc,
+      new FuncQuery<Needed, Optional, Unwanted>(
+        this._ecsInstance,
+        data[0],
+        data?.[1],
+        data?.[2],
+      ),
+    ]);
+  }
+
+  runQuerySystems(delta: number): void {
+    this._functionalSystems.forEach(([func, query]) =>
+      func({
+        query,
+        ecs: this._ecsInstance,
+        delta,
+      }),
+    );
   }
 }

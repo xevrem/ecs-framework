@@ -146,10 +146,7 @@ export class ComponentManager {
    */
   addComponent<C extends Component>(entity: Entity, component: C): void {
     component.owner = entity.id;
-    const components = this._components.get(component.type);
-    if (components) {
-      components.set(entity.id, component);
-    }
+    this._components.get(component.type)?.set(entity.id, component);
   }
 
   /**

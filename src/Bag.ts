@@ -1,4 +1,4 @@
-import { Option } from "onsreo";
+import { Option, is_some } from 'onsreo';
 
 export class Bag<T> {
   private _data: Array<Option<T>> = [];
@@ -108,7 +108,7 @@ export class Bag<T> {
    */
   forEach(
     args: (item: Option<T>, index: number, array: Array<Option<T>>) => void,
-    context?: Bag<T>
+    context?: Bag<T>,
   ): void {
     return this._data.forEach(args, context);
   }
@@ -123,9 +123,9 @@ export class Bag<T> {
     args: (
       item: Option<T>,
       index: number,
-      array: Array<Option<T>>
+      array: Array<Option<T>>,
     ) => Option<T>,
-    context?: Bag<T>
+    context?: Bag<T>,
   ): Array<Option<T>> {
     return this._data.map(args, context);
   }
@@ -138,7 +138,7 @@ export class Bag<T> {
    */
   filter(
     args: (item: Option<T>, index: number, array: Array<Option<T>>) => boolean,
-    context?: Bag<T>
+    context?: Bag<T>,
   ): Array<Option<T>> {
     return this._data.filter(args, context);
   }
@@ -154,9 +154,9 @@ export class Bag<T> {
       acc: V,
       item: Option<T>,
       index: number,
-      array: Array<Option<T>>
+      array: Array<Option<T>>,
     ) => V,
-    init: V
+    init: V,
   ): V {
     return this._data.reduce(args, init);
   }
@@ -175,8 +175,8 @@ export class Bag<T> {
     predicate: (
       value: Option<T>,
       index: number,
-      array: Array<Option<T>>
-    ) => boolean
+      array: Array<Option<T>>,
+    ) => boolean,
   ): boolean {
     return this._data.some(predicate);
   }
@@ -186,8 +186,8 @@ export class Bag<T> {
    * @param index the index of the item to retrieve
    * @returns the item if found otherwise `undefined`
    */
-  get<U extends T>(index: number): Option<U> {
-    return this._data[index] as U;
+  get<U extends T>(index: Option<number>): Option<U> {
+    return is_some(index) ? (this._data[index] as U) : undefined;
   }
 
   /**
@@ -357,7 +357,7 @@ export class Bag<T> {
   grow(size: number = 2 * this._data.length + 1): void {
     if (size <= this._data.length) return;
     this._data = this._data.concat(
-      new Array<Option<T>>(size - this._data.length)
+      new Array<Option<T>>(size - this._data.length),
     );
   }
 }

@@ -7,19 +7,21 @@ describe('EcsInstance', () => {
   });
 
   it('should check for components by entity ID', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const foo = new Foo();
       const entity = rig.ecs.createEntity();
       expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeFalsy();
       rig.ecs.addComponent(entity, foo);
-      expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeTruthy();
+      expect(
+        rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type),
+      ).toBeTruthy();
     });
   });
 
   it('should check for components by tag', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const foo = new Foo();
@@ -31,22 +33,8 @@ describe('EcsInstance', () => {
     });
   });
 
-  it('should be able to make a component mapper', () => {
-    ecsRig((rig) => {
-      const Foo = rig.makeComponentType();
-      rig.ecs.componentManager.registerComponent(Foo);
-      const foo = new Foo();
-      const entity = rig.ecs.createEntity();
-      rig.ecs.addComponent(entity, foo);
-      expect(rig.ecs.hasComponentByIdOfTypeId(entity.id, foo.type)).toBeTruthy();
-      const mapper = rig.ecs.makeMapper(Foo);
-      const component = mapper.get(entity);
-      expect(component).toEqual(foo);
-    });
-  });
-
   it('should be able to delete an entity', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const entity = rig.ecs.createEntity();
       expect(rig.ecs.getEntity(entity.id)).toEqual(entity);
       rig.ecs.deleteEntity(entity);
@@ -56,7 +44,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to resolve all entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const foo = new Foo();
@@ -64,7 +52,7 @@ describe('EcsInstance', () => {
       rig.ecs.addComponent(entity, foo);
       const system = rig.ecs.systemManager.registerSystem(
         rig.makeSystemType({ needed: [Foo] }),
-        {}
+        {},
       );
       rig.ecs.resolve(entity);
       rig.ecs.resolveEntities();
@@ -73,7 +61,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to update time', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const time = performance.now();
       rig.ecs.updateTime(time);
       expect(rig.ecs.delta).not.toEqual(0);
@@ -83,7 +71,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to update time by delta', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const time = performance.now();
       rig.ecs.updateByDelta(time);
       expect(rig.ecs.delta).toEqual(time);
@@ -93,7 +81,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to iterate over entity queries with joinAll', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const Bar = rig.makeComponentType();
@@ -122,7 +110,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to iterate over entity queries with join', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const Bar = rig.makeComponentType();
@@ -145,7 +133,7 @@ describe('EcsInstance', () => {
         [e1, e2, e3],
         [Foo],
         [Bar],
-        [Baz]
+        [Baz],
       )) {
         foo && neededCount++;
         bar && optionalCount++;
@@ -156,7 +144,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to retrieve components for entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const Bar = rig.makeComponentType();
@@ -181,7 +169,7 @@ describe('EcsInstance', () => {
   });
 
   it('should be able to retrieveById components for entities', () => {
-    ecsRig((rig) => {
+    ecsRig(rig => {
       const Foo = rig.makeComponentType();
       rig.ecs.componentManager.registerComponent(Foo);
       const Bar = rig.makeComponentType();

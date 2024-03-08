@@ -1,15 +1,20 @@
+import { Option } from 'onsreo';
 import { Entity } from './Entity';
 
 export class TagManager {
-  private _tags: Record<string, Entity> = {};
+  _tags: Map<string, Entity>;
+
+  constructor() {
+    this._tags = new Map();
+  }
 
   /**
    * gets the entity assigned to the given tag
    * @param tag the tag to retrieve
    * @returns the entity if tagged, otherwise `undefined`
    */
-  getEntityByTag(tag: string): Entity | undefined {
-    return this._tags[tag];
+  getEntityByTag(tag: string): Option<Entity> {
+    return this._tags.get(tag);
   }
 
   /**
@@ -18,7 +23,7 @@ export class TagManager {
    * @param entity the entity to tag
    */
   tagEntity(tag: string, entity: Entity): void {
-    this._tags[tag] = entity;
+    this._tags.set(tag, entity);
   }
 
   tagExists(tag: string): boolean {
@@ -30,8 +35,8 @@ export class TagManager {
    * @param entity the entity to delete
    */
   deleteEntity(entity: Entity): void {
-    Object.keys(this._tags).forEach((key) => {
-      if (this._tags[key].id === entity.id) delete this._tags[key];
+    this._tags.forEach((_entity, tag) => {
+      if (this._tags.get(tag)?.id === entity.id) this._tags.delete(tag);
     });
   }
 
@@ -40,13 +45,13 @@ export class TagManager {
    * @param tag the tag to remove
    */
   removeTag(tag: string): void {
-    delete this._tags[tag];
+    this._tags.delete(tag);
   }
 
   /**
    * clean up all tags
    */
   cleanUp(): void {
-    this._tags = {};
+    this._tags.clear();
   }
 }

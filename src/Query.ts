@@ -189,41 +189,29 @@ export class Query<
     );
   }
 
-  join<
-    T extends (typeof Component)[],
-    V extends (typeof Component)[],
-    W extends (typeof Component)[],
-  >(
+  join(
     entities: Entity[],
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     return this._ecsInstance.join(entities, needed, optional, unwanted);
   }
 
-  joinById<
-    T extends (typeof Component)[],
-    V extends (typeof Component)[],
-    W extends (typeof Component)[],
-  >(
+  joinById(
     ids: number[],
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     return this._ecsInstance.joinById(ids, needed, optional, unwanted);
   }
 
-  joinAll<
-    T extends (typeof Component)[],
-    V extends (typeof Component)[],
-    W extends (typeof Component)[],
-  >(
-    needed?: [...T],
-    optional?: [...V],
-    unwanted?: [...W],
-  ): IterableIterator<JoinedResult<T, V>> {
+  joinAll(
+    needed?: [...Needed],
+    optional?: [...Optional],
+    unwanted?: [...Unwanted],
+  ): IterableIterator<JoinedResult<Needed, Optional>> {
     return this._ecsInstance.joinAll(needed, optional, unwanted);
   }
 
@@ -234,11 +222,8 @@ export class Query<
     ]);
   }
 
-  retrieveById(id: number): JoinedData<Needed, Optional> {
-    return this._ecsInstance.retrieveById(id, [
-      ...this._needed,
-      ...this._optional,
-    ]);
+  retrieveById(id: number): JoinedData<[], Optional> {
+    return this._ecsInstance.retrieveById(id, [...this._optional]);
   }
 
   /**
