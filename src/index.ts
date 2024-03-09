@@ -1,3 +1,4 @@
+import 'evjkit';
 export * from './Bag';
 export * from './Component';
 export * from './ComponentManager';

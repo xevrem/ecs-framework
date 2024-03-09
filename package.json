@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/xevrem/ecs-framework",
   "dependencies": {
+    "evjkit": "^0.0.7",
     "onsreo": "^1.0.6"
   },
   "devDependencies": {
