@@ -102,6 +102,28 @@ export class Bag<T> {
   }
 
   /**
+   * collect all non-`None` values into an array and return
+   * @returns an array of all `Some<T>` values.
+   */
+  collect(): T[] {
+    return this._data.reduce<T[]>(
+      (acc, item) => (is_some(item) ? acc.addItem(item) : acc),
+      [],
+    );
+  }
+
+  /**
+   * collect all non-`None` value indexes into an array and return
+   * @returns an array of all populated index values, i.e., `number[]`.
+   */
+  populated(): number[] {
+    return this._data.reduce<number[]>(
+      (acc, item, index) => (is_some(item) ? acc.addItem(index) : acc),
+      [],
+    );
+  }
+
+  /**
    * perform a functional `forEach` operation on this bag
    * @param args args the standard `forEach` arguments
    * @param [context] the optional context to use
