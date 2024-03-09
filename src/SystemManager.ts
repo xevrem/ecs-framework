@@ -31,7 +31,9 @@ export class SystemManager {
   private _systems!: AnySystem[];
   private _nextId: number;
   private _functionalSystems: FuncQuerySysEntry[] = [];
+  private _functionalAddSystems: FuncQuerySysEntry[] = [];
   private _functionalCreateSystems: FuncQuerySysEntry[] = [];
+  private _functionalDeleteSystems: FuncQuerySysEntry[] = [];
   private _functionalUpdateSystems: FuncQuerySysEntry[] = [];
 
   constructor(ecsInstance: EcsInstance) {
@@ -148,6 +150,10 @@ export class SystemManager {
       const system = this._reactiveSystems[i];
       system.query.validate(entity) && system.createEntity(entity);
     }
+    for (let i = this._functionalCreateSystems.length; i--; ) {
+      const [_system, query] = this._functionalCreateSystems[i];
+      query.entities.push(entity);
+    }
   }
 
   /**
@@ -177,6 +183,11 @@ export class SystemManager {
         if (system.query.validate(entity)) {
           system.addEntity(entity);
         }
+      }
+
+      for (let i = this._functionalAddSystems.length; i--; ) {
+        const [_system, query] = this._functionalAddSystems[i];
+        query.entities.push(entity);
       }
     }
   }
@@ -235,6 +246,10 @@ export class SystemManager {
       const system = this._reactiveSystems[i];
       system.query.validate(entity) && system.deleteEntity(entity);
     }
+    for (let i = this._functionalDeleteSystems.length; i--; ) {
+      const [_system, query] = this._functionalDeleteSystems[i];
+      query.entities.push(entity);
+    }
   }
 
   /**
@@ -270,6 +285,16 @@ export class SystemManager {
         }
       }
     }
+    // get all All populated entity entries
+    const entities = updated.populated().reduce<Entity[]>((entities, id) => {
+      const maybe_entity = this._ecsInstance.getEntity(id);
+      return maybe_entity ? entities.addItem(maybe_entity) : entities;
+    }, []);
+    // then notify functional update systems to run against the updates
+    for (let i = this._functionalUpdateSystems.length; i--; ) {
+      const [_system, query] = this._functionalUpdateSystems[i];
+      query.entities.add(entities);
+    }
   }
 
   /**
@@ -284,6 +309,12 @@ export class SystemManager {
         system.isReactive && system.addByUpdate(entity);
         !system.isReactive && system.update(entity);
       }
+    }
+
+    // notify functional update systems to run against the entity
+    for (let i = this._functionalUpdateSystems.length; i--; ) {
+      const [_system, query] = this._functionalUpdateSystems[i];
+      query.entities.push(entity);
     }
   }
 
@@ -305,6 +336,9 @@ export class SystemManager {
     this._systems = [];
   }
 
+  /**
+   * create a functional system that runs every frame
+   */
   withSystem<
     Needed extends ComponentTuple,
     Optional extends ComponentOptionTuple = [],
@@ -324,10 +358,44 @@ export class SystemManager {
         data[0],
         data?.[1],
         data?.[2],
+        false,
       ),
     ]);
   }
 
+  /**
+   * create a functional system that runs when an entity has one
+   * or more components added/removed that then cause it to
+   * match this system
+   */
+  withAddSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this._functionalAddSystems.push([
+      queryFunc,
+      new FuncQuery<Needed, Optional, Unwanted>(
+        this._ecsInstance,
+        data[0],
+        data?.[1],
+        data?.[2],
+        true,
+      ),
+    ]);
+  }
+
+  /**
+   * create a functional system that runs when an entity
+   * is created that matches this system
+   */
   withCreateSystem<
     Needed extends ComponentTuple,
     Optional extends ComponentOptionTuple = [],
@@ -347,10 +415,44 @@ export class SystemManager {
         data[0],
         data?.[1],
         data?.[2],
+        true,
       ),
     ]);
   }
 
+  /**
+   * create a functional system that runs when an entity
+   * is deleted that matches this system
+   */
+  withDeleteSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this._functionalDeleteSystems.push([
+      queryFunc,
+      new FuncQuery<Needed, Optional, Unwanted>(
+        this._ecsInstance,
+        data[0],
+        data?.[1],
+        data?.[2],
+        true,
+      ),
+    ]);
+  }
+
+  /**
+   * create a functional system that runs when an entity
+   * is explicity updated or has a component updated
+   * that matches this system
+   */
   withUpdateSystem<
     Needed extends ComponentTuple,
     Optional extends ComponentOptionTuple = [],
@@ -370,12 +472,41 @@ export class SystemManager {
         data[0],
         data?.[1],
         data?.[2],
+        true,
       ),
     ]);
   }
 
   runQuerySystems(delta: number): void {
     this._functionalSystems.forEach(([func, query]) =>
+      func({
+        query,
+        ecs: this._ecsInstance,
+        delta,
+      }),
+    );
+    this._functionalDeleteSystems.forEach(([func, query]) =>
+      func({
+        query,
+        ecs: this._ecsInstance,
+        delta,
+      }),
+    );
+    this._functionalAddSystems.forEach(([func, query]) =>
+      func({
+        query,
+        ecs: this._ecsInstance,
+        delta,
+      }),
+    );
+    this._functionalUpdateSystems.forEach(([func, query]) =>
+      func({
+        query,
+        ecs: this._ecsInstance,
+        delta,
+      }),
+    );
+    this._functionalCreateSystems.forEach(([func, query]) =>
       func({
         query,
         ecs: this._ecsInstance,

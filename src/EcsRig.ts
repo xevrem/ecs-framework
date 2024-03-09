@@ -8,6 +8,12 @@ import { Query } from './Query';
 
 class Bar<T> extends Component {
   data!: T;
+  constructor(data?: T) {
+    super();
+    if (data) {
+      this.data = data;
+    }
+  }
 }
 
 type SystemQuery<

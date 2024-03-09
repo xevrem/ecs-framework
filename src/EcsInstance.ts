@@ -951,6 +951,21 @@ export class EcsInstance {
     this.systemManager.withSystem(data, queryFunc);
   }
 
+  withAddSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this.systemManager.withAddSystem(data, queryFunc);
+  }
+
   withCreateSystem<
     Needed extends ComponentTuple,
     Optional extends ComponentOptionTuple = [],
@@ -964,5 +979,35 @@ export class EcsInstance {
     queryFunc: QueryFunc<Needed, Optional, Unwanted>,
   ): void {
     this.systemManager.withCreateSystem(data, queryFunc);
+  }
+
+  withDeleteSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this.systemManager.withDeleteSystem(data, queryFunc);
+  }
+
+  withUpdateSystem<
+    Needed extends ComponentTuple,
+    Optional extends ComponentOptionTuple = [],
+    Unwanted extends ComponentTuple = [],
+  >(
+    data: [
+      needed: [...Needed],
+      optional?: [...Optional],
+      unwanted?: [...Unwanted],
+    ],
+    queryFunc: QueryFunc<Needed, Optional, Unwanted>,
+  ): void {
+    this.systemManager.withUpdateSystem(data, queryFunc);
   }
 }
