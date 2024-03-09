@@ -308,7 +308,7 @@ export class EntitySystem<
     if (this._dirty) this.resolveQuery();
     const data = this._query.data;
     for (let i = data.length; i--; ) {
-      this.join(data[i]);
+      this.join(data[i], this.ecs.delta);
     }
   }
 
@@ -378,7 +378,7 @@ export class EntitySystem<
    * for entities in a very efficient data structure. Components are returned in
    * the exact order of the `needed` array followed by `optional` array
    */
-  join?(result: JoinedResult<Needed, Optional>): void;
+  join?(result: JoinedResult<Needed, Optional>, delta: number): void;
   /**
    * called for static systems when a given entity it owns has a component update
    */
