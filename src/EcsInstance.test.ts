@@ -1,5 +1,6 @@
 import { EcsInstance } from './EcsInstance';
 import ecsRig from './EcsRig';
+import { proxify } from './Proxify';
 
 describe('EcsInstance', () => {
   it('should create an ECS instance without crashing', () => {
@@ -190,6 +191,33 @@ describe('EcsInstance', () => {
       [foo, bar] = rig.ecs.retrieveById(e2.id, [Foo, Bar]);
       expect(foo).toBeDefined();
       expect(bar).toBeDefined();
+    });
+  });
+
+  it('proxify', () => {
+    ecsRig(rig => {
+      const Foo = rig.makeComponentType();
+      const Bar = rig.makeComponentType<{ baz: number }>();
+      rig.init();
+      rig.update();
+
+      const entity = rig.ecs
+        .create()
+        .add(proxify(new Foo(), rig.ecs))
+        .add(proxify(new Bar(), rig.ecs))
+        .tag('foo')
+        .build();
+
+      rig.update();
+
+      expect(rig.ecs._updating.count).toEqual(0);
+      
+      const foo = rig.getComponent(entity, Foo);
+      foo.data = 344;
+      expect(rig.ecs._updating.last?.last?.first()).toEqual(foo);
+      const bar = rig.getComponent(entity, Bar);
+      bar.data = {baz: 42};
+      expect(rig.ecs._updating.count).toEqual(2);
     });
   });
 });

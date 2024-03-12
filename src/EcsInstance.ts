@@ -38,7 +38,7 @@ export class EcsInstance {
   private _resolving: Bag<SmartResolve>;
   private _deleting: Bag<Entity>;
   private _updatingEntities: Entity[];
-  private _updating: Bag<Bag<SmartUpdate>>;
+  _updating: Bag<Bag<SmartUpdate>>;
   private _delta: number;
   private _lastTime: number;
   private _elapsed: number;

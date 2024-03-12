@@ -1,3 +1,4 @@
+import { Option } from 'onsreo';
 import { ComponentOptionTuple, ComponentTuple } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
@@ -45,6 +46,21 @@ export class EcsRig {
     this.ecs.loadSystems();
     this.ecs.initialCreate();
     this.ecs.scheduleSystems();
+  }
+
+  getComponent<C extends typeof Component>(
+    entity: Option<Entity>,
+    componentType: C,
+  ): InstanceType<C> {
+    if (!entity) throw new Error('ENTITY DOES NOT EXIST!');
+    const comp = this.ecs.getComponent(entity, componentType);
+    if (!comp) throw new Error('COMPONENT DOES NOT EXIST!');
+    return comp;
+  }
+
+  getComponentByTag<C extends typeof Component>(tag: string, componentType: C) {
+    const entity = this.ecs.getEntityByTag(tag);
+    return this.getComponent(entity, componentType);
   }
 
   makeComponentType<T = number>(): typeof Bar<T> {
