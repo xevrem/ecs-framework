@@ -1,5 +1,6 @@
 import { EcsInstance } from './EcsInstance';
 import ecsRig from './EcsRig';
+import { proxify } from './Proxify';
 
 describe('EcsInstance', () => {
   it('should create an ECS instance without crashing', () => {

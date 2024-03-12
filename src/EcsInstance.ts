@@ -61,6 +61,14 @@ export class EcsInstance {
     this._elapsed = 0;
   }
 
+  get creating(): Bag<Entity> {
+    return this._creating;
+  }
+
+  get deleting(): Bag<Entity> {
+    return this._deleting;
+  }
+
   get delta(): number {
     return this._delta;
   }
@@ -71,6 +79,14 @@ export class EcsInstance {
 
   get lastTime(): number {
     return this._lastTime;
+  }
+
+  get resolving(): Bag<SmartResolve> {
+    return this._resolving;
+  }
+
+  get updating(): Bag<Bag<SmartUpdate>> {
+    return this._updating;
   }
 
   /**
@@ -87,17 +103,27 @@ export class EcsInstance {
    * add a component to an entity
    * @param entity the entity to receive the component
    * @param component the component to add
+   * @param auto - whether to enable auto-update for the component [default: false]
    */
-  addComponent<C extends Component>(entity: Entity, component: C): void {
-    this.componentManager.addComponent(entity, component);
+  addComponent<C extends Component>(
+    entity: Entity,
+    component: C,
+    auto: boolean = false,
+  ): void {
+    this.componentManager.addComponent(entity, component, auto);
   }
 
   /**
    * adds the given component to the entity with the given id
    * @param id the id of the entity to which to add the component
    * @param component the component instance to add to the entity
+   * @param auto - whether to enable auto-update for the component [default: false]
    */
-  addComponentById<C extends Component>(id: number, component: C): void {
+  addComponentById<C extends Component>(
+    id: number,
+    component: C,
+    auto: boolean = false,
+  ): void {
     this.componentManager.addComponentById(id, component);
   }
 
