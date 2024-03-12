@@ -1,5 +1,5 @@
 import { Option, Result, is_err, is_none } from 'onsreo';
-import { ComponentOptionTuple, ComponentTuple } from './types';
+import { ComponentOptionTuple, ComponentTuple, ComponentType } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
 import { EcsInstance } from './EcsInstance';
@@ -59,6 +59,42 @@ export class EcsRig {
     this.ecs.loadSystems();
     this.ecs.initialCreate();
     this.ecs.scheduleSystems();
+  }
+
+  addComponent<C extends Component>(
+    entity: Option<Entity> | Result<Entity, EntityBuildError>,
+    component: C,
+    auto: boolean = false,
+  ) {
+    if (is_none(entity)) {
+      throw new EcsRigError('ENTITY DOES NOT EXIST!');
+    } else if (is_err<any, Error>(entity)) {
+      if (entity instanceof EntityBuildError) {
+        throw new EcsRigError(`ENTITY HAS BUILD ERROR:\n${entity.message}`, {
+          cause: entity.cause,
+        });
+      } else {
+        throw new EcsRigError('IS ERROR, NOT ENTITY:', { cause: entity });
+      }
+    } else {
+      this.ecs.addComponent(entity, component, auto);
+    }
+  }
+
+  deleteEntity(entity: Option<Entity> | Result<Entity, EntityBuildError>) {
+    if (is_none(entity)) {
+      throw new EcsRigError('ENTITY DOES NOT EXIST!');
+    } else if (is_err<any, Error>(entity)) {
+      if (entity instanceof EntityBuildError) {
+        throw new EcsRigError(`ENTITY HAS BUILD ERROR:\n${entity.message}`, {
+          cause: entity.cause,
+        });
+      } else {
+        throw new EcsRigError('IS ERROR, NOT ENTITY:', { cause: entity });
+      }
+    } else {
+      this.ecs.deleteEntity(entity);
+    }
   }
 
   getComponent<C extends typeof Component>(
@@ -133,10 +169,42 @@ export class EcsRig {
     return System as any;
   }
 
+  resolve(entity: Option<Entity> | Result<Entity, EntityBuildError>) {
+    if (is_none(entity)) {
+      throw new EcsRigError('ENTITY DOES NOT EXIST!');
+    } else if (is_err<any, Error>(entity)) {
+      if (entity instanceof EntityBuildError) {
+        throw new EcsRigError(`ENTITY HAS BUILD ERROR:\n${entity.message}`, {
+          cause: entity.cause,
+        });
+      } else {
+        throw new EcsRigError('IS ERROR, NOT ENTITY:', { cause: entity });
+      }
+    } else {
+      this.ecs.resolve(entity);
+    }
+  }
+
   update(time: number = performance.now()): void {
     this.ecs.updateTime(time);
     this.ecs.resolveEntities();
     this.ecs.runSystems();
+  }
+
+  updateByEntity(entity: Option<Entity> | Result<Entity, EntityBuildError>) {
+    if (is_none(entity)) {
+      throw new EcsRigError('ENTITY DOES NOT EXIST!');
+    } else if (is_err<any, Error>(entity)) {
+      if (entity instanceof EntityBuildError) {
+        throw new EcsRigError(`ENTITY HAS BUILD ERROR:\n${entity.message}`, {
+          cause: entity.cause,
+        });
+      } else {
+        throw new EcsRigError('IS ERROR, NOT ENTITY:', { cause: entity });
+      }
+    } else {
+      this.ecs.updateByEntity(entity);
+    }
   }
 }
 

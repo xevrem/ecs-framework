@@ -60,8 +60,8 @@ describe('FuncQuery', () => {
       expect(rig.ecs.hasComponentByTag('foo', Bar)).toBeFalsy();
       let bar = new Bar();
       bar.data = 'hello';
-      rig.ecs.addComponent(entity, bar);
-      rig.ecs.resolve(entity);
+      rig.addComponent(entity, bar);
+      rig.resolve(entity);
       rig.update();
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(42);
       expect(rig.ecs.hasComponentByTag('foo', Bar)).toBeTruthy();
@@ -116,7 +116,7 @@ describe('FuncQuery', () => {
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(24);
       expect(deleted).toBeFalsy();
       // now delete the entity
-      rig.ecs.deleteEntity(entity);
+      rig.deleteEntity(entity);
       rig.update();
       // foo should be undefined
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toBeUndefined();
@@ -149,7 +149,7 @@ describe('FuncQuery', () => {
       // should still be 24
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(24);
       // now update the entity
-      rig.ecs.updateByEntity(entity);
+      rig.updateByEntity(entity);
       rig.update();
       // now should equal 42
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(42);
