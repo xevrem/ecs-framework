@@ -3,16 +3,31 @@ import { EcsInstance } from './EcsInstance';
 export function proxify<T extends Object>(
   obj: T,
   ecs: EcsInstance,
-  source?: any,
+  ignored: (keyof T)[] = [],
+  source: any = undefined,
 ) {
-  source = source ? source : obj;
-  return new Proxy(obj, {
-    set(target, key, value): boolean {
-      if (typeof value === 'object') {
-        value = proxify(value, ecs, source);
+  let inner_source = source ? source : obj;
+
+  const modified = (Object.getOwnPropertyNames(obj) as (keyof T)[]).reduce<T>(
+    (modified: T, prop: keyof T) => {
+      if (prop in ignored) return modified;
+      if (typeof modified[prop] === 'object') {
+        modified[prop] = proxify<any>(
+          modified[prop],
+          ecs,
+          ignored,
+          inner_source,
+        );
       }
+      return modified;
+    },
+    obj,
+  );
+
+  return new Proxy<any>(modified, {
+    set(target, key, value, _receiver): boolean {
       target[key as keyof T] = value;
-      ecs.update(source);
+      ecs.update(inner_source);
       return true;
     },
   });

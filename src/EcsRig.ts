@@ -1,4 +1,4 @@
-import { Option } from 'onsreo';
+import { Option, Result, is_err, is_none } from 'onsreo';
 import { ComponentOptionTuple, ComponentTuple } from './types';
 import { Bag } from './Bag';
 import { Component } from './Component';
@@ -6,6 +6,7 @@ import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
 import { EntitySystem, type EntitySystemArgs } from './EntitySystem';
 import { Query } from './Query';
+import { EntityBuildError } from './EntityBuilder';
 
 class Bar<T> extends Component {
   data!: T;
@@ -26,6 +27,18 @@ type SystemQuery<
   optional?: [...Optional];
   unwanted?: [...Unwanted];
 };
+
+export class EcsRigError extends Error {
+  constructor(message: string, options?: ErrorOptions & { cause: any }) {
+    if (options?.cause?.cause) {
+      super(message, {
+        cause: options.cause.cause,
+      });
+    } else {
+      super(message, options);
+    }
+  }
+}
 
 export class EcsRig {
   ecs: EcsInstance;
@@ -49,13 +62,24 @@ export class EcsRig {
   }
 
   getComponent<C extends typeof Component>(
-    entity: Option<Entity>,
+    entity: Option<Entity> | Result<Entity, EntityBuildError>,
     componentType: C,
   ): InstanceType<C> {
-    if (!entity) throw new Error('ENTITY DOES NOT EXIST!');
-    const comp = this.ecs.getComponent(entity, componentType);
-    if (!comp) throw new Error('COMPONENT DOES NOT EXIST!');
-    return comp;
+    if (is_none(entity)) {
+      throw new EcsRigError('ENTITY DOES NOT EXIST!');
+    } else if (is_err<any, Error>(entity)) {
+      if (entity instanceof EntityBuildError) {
+        throw new EcsRigError(`ENTITY HAS BUILD ERROR:\n${entity.message}`, {
+          cause: entity.cause,
+        });
+      } else {
+        throw new EcsRigError('IS ERROR, NOT ENTITY:', { cause: entity });
+      }
+    } else {
+      const comp = this.ecs.getComponent(entity, componentType);
+      if (is_none(comp)) throw new EcsRigError('COMPONENT DOES NOT EXIST!');
+      return comp;
+    }
   }
 
   getComponentByTag<C extends typeof Component>(tag: string, componentType: C) {
@@ -128,14 +152,12 @@ export function ecsRig(
     callback(rig);
   } catch (cause) {
     if (cause instanceof Error) {
-      const err = new Error(
-        'ERROR encountered in ecsRig callback: \n${cause.message}',
+      throw new EcsRigError(
+        `EXCEPTION ENCOUNTERED IN ECSRIG: \n${cause.message}`,
         {
-          cause: cause.cause,
+          cause,
         },
       );
-      err.stack = cause.stack;
-      throw err;
     } else {
       throw cause;
     }

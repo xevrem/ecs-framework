@@ -3,6 +3,7 @@ import { Bag } from './Bag';
 import { EcsInstance } from './EcsInstance';
 import { Entity } from './Entity';
 import { Component } from './Component';
+import { proxify } from './Proxify';
 
 export class ComponentManager {
   private _ecsInstance: EcsInstance;
@@ -141,30 +142,52 @@ export class ComponentManager {
 
   /**
    * adds the given component to the entity
-   * @param entity the entity to add the component to
-   * @param component the component instance to add to the entity
+   * @param entity - the entity to add the component to
+   * @param component - the component instance to add to the entity
+   * @param auto - whether to enable auto-update for this component [default: false]
    */
-  addComponent<C extends Component>(entity: Entity, component: C): void {
-    component.owner = entity.id;
-    this._components.get(component.type)?.set(entity.id, component);
+  addComponent<C extends Component>(
+    entity: Entity,
+    component: C,
+    auto: boolean = false,
+  ): void {
+    this.addComponentById(entity.id, component, auto);
   }
 
   /**
    * adds the given component to the entity with the given id
-   * @param id the id of the entity to which to add the component
-   * @param component the component instance to add to the entity
+   * @param id - the id of the entity to which to add the component
+   * @param component - the component instance to add to the entity
+   * @param auto - whether to enable auto-update for this component [default: false]
    */
-  addComponentById<C extends Component>(id: number, component: C): void {
+  addComponentById<C extends Component>(
+    id: number,
+    component: C,
+    auto: boolean = false,
+  ): void {
     component.owner = id;
-    const components = this._components.get(component.type);
-    if (components) {
-      components.set(id, component);
+    if (auto) {
+      proxify(component, this._ecsInstance, ['type', 'owner']);
+      this._components
+        .get(component.type)
+        ?.set(id, proxify(component, this._ecsInstance, ['type', 'owner']));
+    } else {
+      this._components.get(component.type)?.set(id, component);
     }
   }
 
-  addComponents<C extends Component>(id: number, components: C[]): void {
+  /**
+   * @param id - the id of the entity to which to add the component
+   * @param components - the components to add to the entity
+   * @param auto - whether to enable auto-update for these components [default: false]
+   */
+  addComponentsById<C extends Component>(
+    id: number,
+    components: C[],
+    auto: boolean = false,
+  ): void {
     for (let i = components.length; i--; ) {
-      this.addComponentById(id, components[i]);
+      this.addComponentById(id, components[i], auto);
     }
   }
 
