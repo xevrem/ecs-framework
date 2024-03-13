@@ -875,42 +875,37 @@ export class EcsInstance {
   }
 
   retrieve<
-    Needed extends ComponentTuple,
+    Needed extends ComponentTuple = [],
     Optional extends ComponentOptionTuple = [],
   >(
     entity: Entity,
-    components: [...Needed, ...Optional],
+    needed?: [...Needed],
+    optional?: [...Optional],
   ): JoinedData<Needed, Optional> {
-    const results: Option<Component>[] = [];
-
-    for (let i = 0; i < components.length; i++) {
-      const compType = components[i];
-      if (is_none(compType)) continue;
-      const gotComponents = this.componentManager.components.get(compType.type);
-      if (is_none(gotComponents)) continue;
-      const value = gotComponents.get(entity.id);
-      results.push(value);
+    const results = this._joiner(entity, needed, optional);
+    if (results) {
+      const [comps, _ent] = results;
+      return comps;
     }
-
-    return results as JoinedData<Needed, Optional>;
+    throw new Error('RETRIEVE FAILED!');
   }
 
-  retrieveById<Optional extends ComponentOptionTuple = []>(
+  retrieveById<
+    Needed extends ComponentTuple = [],
+    Optional extends ComponentOptionTuple = [],
+  >(
     id: number,
-    components: [...Optional],
-  ): JoinedData<[], Optional> {
-    const results: Option<Component>[] = [];
-
-    for (let i = 0; i < components.length; i++) {
-      const compType = components[i];
-      if (is_none(compType)) continue;
-      const gotComponents = this.componentManager.components.get(compType.type);
-      if (is_none(gotComponents)) continue;
-      const value = gotComponents.get(id);
-      results.push(value);
+    needed?: [...Needed],
+    optional?: [...Optional],
+  ): JoinedData<Needed, Optional> {
+    const entity = this.getEntity(id);
+    if (is_none(entity)) throw new Error('ID DOES NOT CORRESPOND TO ENTITY!');
+    const results = this._joiner(entity, needed, optional);
+    if (results) {
+      const [comps, _ent] = results;
+      return comps;
     }
-
-    return results as JoinedData<[], Optional>;
+    throw new Error('RETRIEVE FAILED');
   }
 
   retrieveByTag<
@@ -918,21 +913,17 @@ export class EcsInstance {
     Optional extends ComponentOptionTuple = [],
   >(
     tag: string,
-    components: [...Needed, ...Optional],
-  ): OrderedComponentOptionTuple<Needed> {
-    const results: Option<Component>[] = [];
+    needed?: [...Needed],
+    optional?: [...Optional],
+  ): JoinedData<Needed, Optional> {
     const entity = this.getEntityByTag(tag);
-    if (!entity) return results as OrderedComponentOptionTuple<Needed>;
-
-    for (let j = 0; j < components.length; j++) {
-      const gotComponents = this.componentManager.components.get(
-        components[j]?.type,
-      );
-      const value = gotComponents ? gotComponents.get(entity.id) : undefined;
-      results.push(value);
+    if (is_none(entity)) throw new Error('TAG DOES NOT CORRESPOND TO ENTITY!');
+    const results = this._joiner(entity, needed, optional);
+    if (results) {
+      const [comps, _ent] = results;
+      return comps;
     }
-
-    return results as OrderedComponentOptionTuple<Needed>;
+    throw new Error('RETRIEVE FAILED');
   }
 
   *query<Needed extends ComponentTuple>(

@@ -160,7 +160,7 @@ describe('EcsInstance', () => {
       rig.ecs.addComponent(e2, new Bar());
       rig.ecs.resolveEntities();
 
-      let [foo, bar] = rig.ecs.retrieve(e1, [Foo, Bar]);
+      let [foo, bar] = rig.ecs.retrieve(e1, [Foo], [Bar]);
       expect(foo).toBeDefined();
       expect(bar).not.toBeDefined();
       [foo, bar] = rig.ecs.retrieve(e2, [Foo, Bar]);
@@ -185,7 +185,7 @@ describe('EcsInstance', () => {
       rig.ecs.addComponent(e2, new Bar());
       rig.ecs.resolveEntities();
 
-      let [foo, bar] = rig.ecs.retrieveById(e1.id, [Foo, Bar]);
+      let [foo, bar] = rig.ecs.retrieveById(e1.id, [Foo], [Bar]);
       expect(foo).toBeDefined();
       expect(bar).not.toBeDefined();
       [foo, bar] = rig.ecs.retrieveById(e2.id, [Foo, Bar]);

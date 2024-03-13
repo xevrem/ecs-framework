@@ -34,7 +34,7 @@ export declare type OrderedComponentNoneTuple<T extends ComponentOptionTuple> =
 
 export declare type JoinedResult<
   T extends ComponentTuple,
-  V extends ComponentOptionTuple,
+  V extends ComponentOptionTuple = [],
 > = [
   components: [...OrderedComponentTuple<T>, ...OrderedComponentOptionTuple<V>],
   entity: Entity,
@@ -42,11 +42,11 @@ export declare type JoinedResult<
 
 export declare type JoinedData<
   T extends ComponentTuple,
-  V extends ComponentOptionTuple,
+  V extends ComponentOptionTuple = [],
 > = [...OrderedComponentTuple<T>, ...OrderedComponentOptionTuple<V>];
 export declare type JoinedQuery<
   T extends ComponentTuple,
-  V extends ComponentOptionTuple,
+  V extends ComponentOptionTuple = [],
 > = [components: JoinedData<T, V>, entity: Entity];
 
 export declare type SmartUpdate = [component: Component, systems: boolean[]];

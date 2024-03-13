@@ -216,15 +216,16 @@ export class Query<
   }
 
   retrieve(): JoinedData<Needed, Optional> {
-    return this._ecsInstance.retrieve(this._entity, [
-      ...this._needed,
-      ...this._optional,
-    ]);
+    return this._ecsInstance.retrieve(
+      this._entity,
+      this._needed,
+      this._optional,
+    );
   }
 
-  retrieveById(id: number): JoinedData<[], Optional> {
-    return this._ecsInstance.retrieveById(id, [...this._optional]);
-  }
+  // retrieveById(id: number): JoinedData<[], Optional> {
+  //   return this._ecsInstance.retrieveById(id, [...this._optional]);
+  // }
 
   /**
    * validates the given entity for this query
