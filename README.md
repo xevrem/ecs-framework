@@ -1,8 +1,8 @@
 # ecs-framework
+
 ===============
 
 an ECS framework for JavaScript/TypeScript
-
 
 ## create an instance:
 
@@ -43,12 +43,11 @@ const entity = ecs
   .group('has foo')
   .build();
 
-if(is_ok(entity)){
- // ok, entity is good
+if (is_ok(entity)) {
+  // ok, entity is good
 } else {
- // oh no, your entity creation failed.
+  // oh no, your entity creation failed.
 }
-
 ```
 
 ## define a system that works on entities with a given component
@@ -56,31 +55,79 @@ if(is_ok(entity)){
 ```typescript
 type Needed = [typeof Foo];
 type Optional = [typeof Bar];
+type Unwanted = [typeof Baz];
 
-class FooSystem extends EntitySystem<any, Needed, Optional> {
+class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
+  /*
+   * `needed`, `optional`, or `unwanted` need to be set manually
+   * OR as part of super call in the constructor.
+   */
   needed = [Foo];
   optional = [Bar];
+  unwanted = [Baz];
+  /*
+   * Same as above, but with constructor approach
+   */
+  constructor(props: EntitySystemArgs<any, Needed, Optional, Unwanted>){
+    super({
+     ...props,
+     needed: [Foo],
+     optional: [Bar],
+     unwanted: [Baz],
+    });
+  }
+
+  /*
+   * run every time the system is called and `shouldProcess`
+   * returns positively. It will be called against every
+   * entity currently registered to this system. The ECS
+   * manages this, so no need to worry :)
+   */
   process(entity: Entity, query: Query<Needed, Optional>) {
     /*
      * `query.retrieve` returns a tuple of needed components
      * followed by optional components in the order they are
      * defined i.e., [Foo, Bar]
-     */ 
+     */
     const [foo, maybeBar] = query.retrieve();
-    
-    // since foo is needed, and a system -only- processes enties that have needed components
-    // foo will always be defined
+
+    /*
+     * since foo is needed, and a system -only- processes enties
+     * that have needed components foo will always be defined
+     */
     foo.myDataProp += 1;
-    
-    // since bar is optional, it may or may not belong to this entity, so you need to check
+
+    /*
+     * since bar is optional, it may or may not belong to this
+     * entity, so you need to check
+     */
     if(is_some(maybeBar)) {
       // bar is defined, so its safe to work on it
     } else {
       // there was no bar on this entity, so it is not safe
     }
   }
-}
 
+  /*
+   * Alternately you have the `join` method of processing in a system
+   * `join` is useful for non-reactive systems, where the data needs
+   * to be processed frequently, but the entity's component
+   * composition is relatively stable i.e., adding/removal of
+   * components is infrequent. The order of returned components is the
+   * same as the definition order of `Needed` components, followed by
+   * the definition order of `Optional` components.
+   */
+   join([[foo, maybeBar], entity]: JoinedResult<Needed, Optional>) {
+     ...
+   }
+   
+   /*
+    * There are also helpful lifecycle methods that are called at various
+    * points when entities are added, removed, created, updated, or deleted.
+    * as well as system specific methods called during initialization, 
+    * loading, reset, and destruction ECS phases.
+    */
+}
 ```
 
 ## alterate way to define the same system as a functional System:
@@ -92,37 +139,38 @@ class FooSystem extends EntitySystem<any, Needed, Optional> {
  */
 ecs.withSystem(
   [
-    [NeededComponentA, NeededComponentB], 
+    [NeededComponentA, NeededComponentB],
     [OptionalComponent],
-    [UnwantedComponent]
+    [UnwantedComponent],
   ],
-  ({query}) => {
-  /* 
-   * components are returned in order of definition. Optional components
-   * come after needed components obviously, unwanted components are
-   * never returned.
-   */ 
-  for (const [[foo, bar, baz], entity] of query.join()) {
+  ({ query }) => {
     /*
-     * `foo` and `bar` are defined, and are of type `NeededComponentA`, and
-     * `NeededComponentB` respectively, so we can work on them safely.
+     * components are returned in order of definition. Optional components
+     * come after needed components obviously, unwanted components are
+     * never returned.
      */
-    foo.myDataProp += 22;
-    bar.data.subData = 'hihi';
-    
-    // since `baz` is optional (i.e., of type `Option<OptionalComponent>`), 
-    // we need to test for its existance before we can safely work on it.
-    if(is_some(baz)){
-      // `baz` exists and is of type `OptionalComponent` on this entity
-      baz.value = new Value();
-    }else {
+    for (const [[foo, bar, baz], entity] of query.join()) {
       /*
-       * `baz` does not exist on this entity, so it would not be safe to work
-       * on it in this context.
+       * `foo` and `bar` are defined, and are of type `NeededComponentA`, and
+       * `NeededComponentB` respectively, so we can work on them safely.
        */
+      foo.myDataProp += 22;
+      bar.data.subData = 'hihi';
+
+      // since `baz` is optional (i.e., of type `Option<OptionalComponent>`),
+      // we need to test for its existance before we can safely work on it.
+      if (is_some(baz)) {
+        // `baz` exists and is of type `OptionalComponent` on this entity
+        baz.value = new Value();
+      } else {
+        /*
+         * `baz` does not exist on this entity, so it would not be safe to work
+         * on it in this context.
+         */
+      }
     }
-  }
-});
+  },
+);
 
 /*
  * There are also several other types of functional systems that run at
@@ -130,37 +178,37 @@ ecs.withSystem(
  */
 
 /*
- * runs whenever an entity has a component added to it, and will only call 
+ * runs whenever an entity has a component added to it, and will only call
  * your callback when there is a match.
  */
-ecs.withAddSystem
+ecs.withAddSystem;
 
 /*
  * runs whenever an entity is created, and will only call your callback
  * when there is a match.
  */
-ecs.withCreateSystem
+ecs.withCreateSystem;
 
 /*
  * runs whenever an entity is deleted, and will only call your callback
  * when there is a match.
  */
-ecs.withDeleteSystem
+ecs.withDeleteSystem;
 
 /*
  * runs whenever an entity has an update, and will only call your callback
  * when there is a match.
  */
-ecs.withUpdateSystem
+ecs.withUpdateSystem;
 ```
 
 ## register a class system
 
 ```typescript
 ecs.registerSystem(FooSystem, {
-  // false - not reactive, acts every frame; 
+  // false - not reactive, acts every frame;
   // true - reactive, only acts when component data update occurs
-  reactive: false 
+  reactive: false
   // order in which this system should run (i.e., first to last)
   // no number defaults to priority of 0
   priority: 1,
@@ -179,13 +227,13 @@ ecs.registerSystem(FooSystem, {
  */
 
 // for example, lets say `component` is of type `Foo`
-ecs.update(component); 
+ecs.update(component);
 /*
  * now all reactive systems that have `Foo` as `needed` or `optional`
  * will be run on the next update cycle.
  */
 
-/* 
+/*
  * for the new auto-updates when adding the `Foo` `component` to the
  * entity, set the `auto` parameter to `true`
  */
@@ -194,7 +242,7 @@ ecs.addComponent(myEntity, foo, true);
 // OR
 ecs.create().add(new Foo(), true).build();
 /*
- * now, when you alter `myDataProp` on `Foo`, all reactive systems 
+ * now, when you alter `myDataProp` on `Foo`, all reactive systems
  * that have `Foo` as `needed` or `optional` will be run on the next
  * update cycle.
  */
@@ -223,8 +271,9 @@ ecs.registerSystem(MovementSystem, { priority: 3 });
 ecs.initializeSystems();
 
 // 4) create any -initial- entities you want
-ecs.create()
-  .addWith((builder)=> {
+ecs
+  .create()
+  .addWith(builder => {
     const position = new Position();
     position.x = 4;
     position.y = 2;
@@ -251,5 +300,4 @@ ecs.scheduleSystems();
 ecs.updateTime(time);
 ecs.resolveEntities(); // creates, updates, destroys appropriate entities and notifies systems
 ecs.runSystems(); // runs all non-reactive systems and only the reactive systems that have updates
-
 ```
