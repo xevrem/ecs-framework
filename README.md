@@ -53,27 +53,27 @@ if (is_ok(entity)) {
 ## define a system that works on entities with a given component
 
 ```typescript
-type Needed = [typeof Foo];
-type Optional = [typeof Bar];
-type Unwanted = [typeof Baz];
+type Needed = [typeof Foo, typeof Bar];
+type Optional = [typeof Baz];
+type Unwanted = [typeof Nope];
 
 class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
   /*
    * `needed`, `optional`, or `unwanted` need to be set manually
    * OR as part of super call in the constructor.
    */
-  needed = [Foo];
-  optional = [Bar];
-  unwanted = [Baz];
+  needed = [Foo, Bar];
+  optional = [Baz];
+  unwanted = [Nope];
   /*
    * Same as above, but with constructor approach
    */
   constructor(props: EntitySystemArgs<any, Needed, Optional, Unwanted>){
     super({
      ...props,
-     needed: [Foo],
-     optional: [Bar],
-     unwanted: [Baz],
+     needed: [Foo,Bar],
+     optional: [Baz],
+     unwanted: [Nope],
     });
   }
 
@@ -87,24 +87,26 @@ class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
     /*
      * `query.retrieve` returns a tuple of needed components
      * followed by optional components in the order they are
-     * defined i.e., [Foo, Bar]
+     * defined i.e., `[Foo, Bar, Option<Baz>]`
      */
-    const [foo, maybeBar] = query.retrieve();
+    const [foo, bar, maybeBaz] = query.retrieve();
 
     /*
      * since foo is needed, and a system -only- processes enties
      * that have needed components foo will always be defined
      */
-    foo.myDataProp += 1;
+    foo.myDataProp += 22;
+    bar.data.subData = 'hihi';
 
     /*
-     * since bar is optional, it may or may not belong to this
+     * since baz is optional, it may or may not belong to this
      * entity, so you need to check
      */
-    if(is_some(maybeBar)) {
-      // bar is defined, so its safe to work on it
+    if(is_some(maybeBaz)) {
+      // baz is defined, so its safe to work on it
+      baz.value = new Value();
     } else {
-      // there was no bar on this entity, so it is not safe
+      // there was no baz on this entity, so it is not safe
     }
   }
 
@@ -117,7 +119,7 @@ class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
    * same as the definition order of `Needed` components, followed by
    * the definition order of `Optional` components.
    */
-   join([[foo, maybeBar], entity]: JoinedResult<Needed, Optional>) {
+   join([[foo, bar, maybeBaz], entity]: JoinedResult<Needed, Optional>) {
      ...
    }
    
@@ -139,9 +141,9 @@ class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
  */
 ecs.withSystem(
   [
-    [NeededComponentA, NeededComponentB],
-    [OptionalComponent],
-    [UnwantedComponent],
+    [Foo, Bar],
+    [Baz],
+    [Nope],
   ],
   ({ query }) => {
     /*
@@ -149,23 +151,23 @@ ecs.withSystem(
      * come after needed components obviously, unwanted components are
      * never returned.
      */
-    for (const [[foo, bar, baz], entity] of query.join()) {
+    for (const [[foo, bar], entity] of query.join()) {
       /*
-       * `foo` and `bar` are defined, and are of type `NeededComponentA`, and
-       * `NeededComponentB` respectively, so we can work on them safely.
+       * `foo` and `bar` are defined, and are of type `Foo`, and
+       * `Bar` respectively, so we can work on them safely.
        */
       foo.myDataProp += 22;
       bar.data.subData = 'hihi';
 
-      // since `baz` is optional (i.e., of type `Option<OptionalComponent>`),
+      // since `baz` is optional (i.e., of type `Option<Baz>`),
       // we need to test for its existance before we can safely work on it.
       if (is_some(baz)) {
-        // `baz` exists and is of type `OptionalComponent` on this entity
+        // `baz` exists and is of type `Baz` on this entity
         baz.value = new Value();
       } else {
         /*
          * `baz` does not exist on this entity, so it would not be safe to work
-         * on it in this context.
+         * on it in this context i.e., it is seen as `None`.
          */
       }
     }
