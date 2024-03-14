@@ -119,7 +119,6 @@ describe('EntitySystem', () => {
       expect(system.entities.count).toEqual(0);
       const comp = new TestComp();
       rig.ecs.addComponent(entity, comp);
-      rig.ecs.resolve(entity);
       rig.ecs.resolveEntities();
       expect(system.entities.count).toEqual(1);
       expect(spy).toHaveBeenCalled();
@@ -135,7 +134,6 @@ describe('EntitySystem', () => {
       rig.ecs.addComponent(entity, comp);
       rig.ecs.resolveEntities();
       rig.ecs.removeComponent(comp);
-      rig.ecs.resolve(entity);
       rig.ecs.resolveEntities();
       expect(spy).toHaveBeenCalled();
     });

@@ -33,7 +33,7 @@ export class EntityBuilder {
   initCallback: Option<DataBuilderFunction> = null;
   tags: string[] = [];
   tagCallbacks: StringBuilderFunction[] = [];
-  workingData: Record<PropertyKey, unknown> = {};
+  workingData: Map<PropertyKey, unknown> = new Map();
 
   entity!: Entity;
 
@@ -171,9 +171,11 @@ export class EntityBuilder {
    * @return the data specified
    */
   getData<T>(key: PropertyKey): T {
-    const data = this.workingData[key];
+    const data = this.workingData.get(key);
     if (is_none(data))
-      throw new EntityBuildError(`builder data '${key as string}' is '${typeof data}'`);
+      throw new EntityBuildError(
+        `builder data '${key as string}' is '${typeof data}'`,
+      );
     return data as T;
   }
   /**
@@ -214,7 +216,7 @@ export class EntityBuilder {
    * @return this `EntityBuilder`
    */
   insertData<T>(key: PropertyKey, value: T): EntityBuilder {
-    this.workingData[key] = value;
+    this.workingData.set(key, value);
     return this;
   }
   /**
@@ -224,7 +226,7 @@ export class EntityBuilder {
    * @param value the data to store
    */
   setData<T>(key: PropertyKey, value: T): void {
-    this.workingData[key] = value;
+    this.workingData.set(key, value);
   }
   /**
    * tag an entity with a string

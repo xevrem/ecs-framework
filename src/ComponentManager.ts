@@ -9,15 +9,16 @@ export class ComponentManager {
   private _ecsInstance: EcsInstance;
   private _components: Bag<Bag<Component>>;
   private _nextTypeId: number;
-  private _componentTypes: Record<PropertyKey, typeof Component> = {};
+  private _componentTypes: Map<string, typeof Component>;
 
   constructor(ecsInstance: EcsInstance) {
     this._ecsInstance = ecsInstance;
     this._components = new Bag<Bag<Component>>();
     this._nextTypeId = 0;
+    this._componentTypes = new Map();
   }
 
-  get allTypes(): Record<PropertyKey, typeof Component> {
+  get allTypes(): Map<string, typeof Component> {
     return this._componentTypes;
   }
 
@@ -28,9 +29,9 @@ export class ComponentManager {
   registerComponent<C extends typeof Component>(component: C): void {
     if (component.type < 0) {
       component.type = this._nextTypeId++;
-      this._componentTypes[component.name] = component;
-    } else if (!this._componentTypes[component.name]) {
-      this._componentTypes[component.name] = component;
+      this._componentTypes.set(component.name, component);
+    } else if (!this._componentTypes.has(component.name)) {
+      this._componentTypes.set(component.name, component);
     }
     if (!this._components.has(component.type)) {
       this._components.set(component.type, new Bag<Component>());
@@ -79,8 +80,10 @@ export class ComponentManager {
    * @param name the class name string of the component type desired
    * @returns that component type
    */
-  getComponentTypeByTypeName(name: string): typeof Component {
-    return this._componentTypes[name];
+  getComponentTypeByTypeName<C extends typeof Component>(
+    name: string,
+  ): Option<C> {
+    return this._componentTypes.get(name) as Option<C>;
   }
 
   /**
@@ -197,10 +200,7 @@ export class ComponentManager {
    */
   removeAllComponents(entity: Entity): void {
     for (let i = 0; i < this._components.length; i++) {
-      const components = this._components.get(i);
-      if (components) {
-        components.set(entity.id, undefined);
-      }
+      this._components.get(i)?.set(entity.id, undefined);
     }
   }
 
@@ -209,19 +209,12 @@ export class ComponentManager {
    * @param component the component instance to remove
    */
   removeComponent<C extends Component>(component: C): void {
-    const components = this._components.get(component.type);
-    if (components) {
-      components.set(component.owner, undefined);
-    }
+    this._components.get(component.type)?.set(component.owner, undefined);
   }
 
   removeComponents<C extends Component>(components: C[]): void {
     for (const component of components) {
       this._components.get(component.type)?.set(component.owner, undefined);
-      // const bag = this._components.get(component.type);
-      // if (bag) {
-      //   bag.set(component.owner, undefined);
-      // }
     }
   }
 
@@ -233,20 +226,14 @@ export class ComponentManager {
     entity: Entity,
     component: C,
   ): void {
-    const components = this._components.get(component.type);
-    if (components) {
-      components.set(entity.id, undefined);
-    }
+    this._components.get(component.type)?.set(entity.id, undefined);
   }
 
   removeComponentTypeById<C extends typeof Component>(
     id: number,
     component: C,
   ): void {
-    const components = this._components.get(component.type);
-    if (components) {
-      components.set(id, undefined);
-    }
+    this._components.get(component.type)?.set(id, undefined);
   }
 
   /**
@@ -354,17 +341,14 @@ export class ComponentManager {
    */
   cleanUp(): void {
     for (let i = 0; i < this._components.length; i++) {
-      const components = this._components.get(i);
-      if (components) {
-        components.clear();
-      }
+      this._components.get(i)?.clear();
     }
     this._components.clear();
     // reset the types
-    // Object.values(this._componentTypes).forEach((component) => {
-    //   component.type = -1;
-    // });
-    this._componentTypes = {};
+    this._componentTypes.forEach(componentType => {
+      componentType.type = -1;
+    });
+    this._componentTypes.clear();
     this._nextTypeId = 0;
   }
 }

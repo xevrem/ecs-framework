@@ -48,7 +48,6 @@ describe('Scheduler', () => {
       const entity = rig.ecs.createEntity();
       const foo = new Foo();
       rig.ecs.addComponent(entity, foo);
-      rig.ecs.resolve(entity);
       rig.ecs.resolveEntities();
       const spy = jest.spyOn(sysA, 'process');
       const spy2 = jest.spyOn(sysB, 'process');

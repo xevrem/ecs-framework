@@ -66,7 +66,6 @@ describe('FuncQuery', () => {
       let bar = new Bar();
       bar.data = 'hello';
       rig.addComponent(entity, bar);
-      rig.resolve(entity);
       rig.update();
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(42);
       expect(rig.ecs.hasComponentByTag('foo', Bar)).toBeTruthy();

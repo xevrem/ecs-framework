@@ -27,7 +27,7 @@ export class SystemManager {
   private _ecsInstance: EcsInstance;
   private _staticSystems: AnySystem[];
   private _reactiveSystems: AnySystem[];
-  private _systemTypes: Record<string, AnySystem> = {};
+  private _systemTypes: Map<string, AnySystem> = new Map();
   private _systems!: AnySystem[];
   private _nextId: number;
   private _functionalSystems: FuncQuerySysEntry[] = [];
@@ -60,7 +60,9 @@ export class SystemManager {
    * @returns the registered system with the given name
    */
   getSystemByTypeName<T extends AnySystem>(name: string): T {
-    return this._systemTypes[name] as T;
+    const system = this._systemTypes.get(name);
+    if (!system) throw new Error('SYSTEM DOES NOT EXIST!');
+    return system as T;
   }
 
   /**
@@ -92,7 +94,7 @@ export class SystemManager {
     } else {
       this._staticSystems.push(system);
     }
-    this._systemTypes[system.constructor.name] = system;
+    this._systemTypes.set(system.constructor.name, system);
     return system;
   }
 
@@ -338,7 +340,7 @@ export class SystemManager {
     this.systems.forEach(system => system.cleanSystem());
     this._staticSystems = [];
     this._reactiveSystems = [];
-    this._systemTypes = {};
+    this._systemTypes = new Map();
     this._systems = [];
     this._nextId = 0;
   }

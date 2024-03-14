@@ -132,7 +132,7 @@ class FooSystem extends EntitySystem<any, Needed, Optional, Unwanted> {
 }
 ```
 
-## alterate way to define the same system as a functional System:
+## alternate way to define the same system as a functional System:
 
 ```typescript
 /*
@@ -220,8 +220,9 @@ ecs.registerSystem(FooSystem, {
 });
 
 /*
- * for reactive systems you need to explitly state they are updated
- * OR when adding components to an entity, you can explicitly set
+ * For reactive systems to be notified, you need to explitly state
+ * that your component is updated when you alter its data.
+ * OR When adding components to an entity, you can explicitly set
  * the `auto` parameter to `true` which will wrap the component in
  * a special observing Proxy that should detect any changes you make.
  * NOTE: for components with complex data structures, it is probably

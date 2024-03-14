@@ -109,8 +109,10 @@ export class EcsInstance {
     entity: Entity,
     component: C,
     auto: boolean = false,
+    ignoredSystems: number[] = [],
   ): void {
     this.componentManager.addComponent(entity, component, auto);
+    this.resolve(entity, ignoredSystems);
   }
 
   /**
@@ -123,8 +125,10 @@ export class EcsInstance {
     id: number,
     component: C,
     auto: boolean = false,
+    ignoredSystems: number[] = [],
   ): void {
-    this.componentManager.addComponentById(id, component);
+    this.componentManager.addComponentById(id, component, auto);
+    this.resolveById(id, ignoredSystems);
   }
 
   /**
@@ -354,6 +358,7 @@ export class EcsInstance {
    */
   removeComponent(component: Component): void {
     this.componentManager.removeComponent(component);
+    this.resolveById(component.owner);
   }
 
   /**
@@ -363,10 +368,12 @@ export class EcsInstance {
    */
   removeComponentType(entity: Entity, component: typeof Component): void {
     this.componentManager.removeComponentType(entity, component);
+    this.resolve(entity);
   }
 
   removeComponentTypeById(id: number, component: typeof Component): void {
     this.componentManager.removeComponentTypeById(id, component);
+    this.resolveById(id);
   }
 
   /**
@@ -376,6 +383,8 @@ export class EcsInstance {
    * @param entity the entity to resolve
    */
   resolve(entity: Entity, ignoredSystems: number[] = []): void {
+    // do not resolve entities that are already being created
+    if (is_some(this._creating.get(entity.id))) return;
     const ignored: boolean[] = [];
     for (let i = ignoredSystems.length; i--; ) {
       ignored[ignoredSystems[i]] = true;
@@ -390,6 +399,8 @@ export class EcsInstance {
    * @param id the id of the entity to resolve
    */
   resolveById(id: number, ignoredSystems: number[] = []): void {
+    // do not resolve entities that are already being created
+    if (is_some(this._creating.get(id))) return;
     const ignored: boolean[] = [];
     for (let i = ignoredSystems.length; i--; ) {
       ignored[ignoredSystems[i]] = true;
