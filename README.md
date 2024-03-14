@@ -87,26 +87,71 @@ class FooSystem extends EntitySystem<any, Needed, Optional> {
 
 ```typescript
 /*
- * for now, functional systems are `needed` components only. 
- * this will support `optional` and `unwanted` components later.
+ * Functional systems take up-to 3 component tuples, defining their
+ * Needed, Optional, and Unwanted components, in that order
  */
-ecs.withSystem([[NeededComponent], [OptionalComponent], [UnwantedComponent]], ({query}) => {
-  // components are returned in order of definition.
-  // optional components come after needed components
-  // obviously, unwanted components are never returned
-  for (const [[foo, bar], entity] of query.join()) {
-    // foo is defined, is of type `NeededComponent`, so we can work on it
+ecs.withSystem(
+  [
+    [NeededComponentA, NeededComponentB], 
+    [OptionalComponent],
+    [UnwantedComponent]
+  ],
+  ({query}) => {
+  /* 
+   * components are returned in order of definition. Optional components
+   * come after needed components obviously, unwanted components are
+   * never returned.
+   */ 
+  for (const [[foo, bar, baz], entity] of query.join()) {
+    /*
+     * `foo` and `bar` are defined, and are of type `NeededComponentA`, and
+     * `NeededComponentB` respectively, so we can work on them safely.
+     */
     foo.myDataProp += 22;
+    bar.data.subData = 'hihi';
     
-    // since bar is optional (i.e., of type `Option<OptionalComponent>`), 
-    // we need to test for it    
-    if(is_some(bar)){
-      // bar exists and is of type `OptionalComponent` on this entity
+    // since `baz` is optional (i.e., of type `Option<OptionalComponent>`), 
+    // we need to test for its existance before we can safely work on it.
+    if(is_some(baz)){
+      // `baz` exists and is of type `OptionalComponent` on this entity
+      baz.value = new Value();
     }else {
-      // bar does not exist on this entity
+      /*
+       * `baz` does not exist on this entity, so it would not be safe to work
+       * on it in this context.
+       */
     }
   }
 });
+
+/*
+ * There are also several other types of functional systems that run at
+ * at different times. They all have the same arguments as `withSystem`.
+ */
+
+/*
+ * runs whenever an entity has a component added to it, and will only call 
+ * your callback when there is a match.
+ */
+ecs.withAddSystem
+
+/*
+ * runs whenever an entity is created, and will only call your callback
+ * when there is a match.
+ */
+ecs.withCreateSystem
+
+/*
+ * runs whenever an entity is deleted, and will only call your callback
+ * when there is a match.
+ */
+ecs.withDeleteSystem
+
+/*
+ * runs whenever an entity has an update, and will only call your callback
+ * when there is a match.
+ */
+ecs.withUpdateSystem
 ```
 
 ## register a class system
@@ -126,14 +171,35 @@ ecs.registerSystem(FooSystem, {
 
 /*
  * for reactive systems you need to explitly state they are updated
- * in the future we will see if an Observable method is doable without
- * too much of a performance penalty
+ * OR when adding components to an entity, you can explicitly set
+ * the `auto` parameter to `true` which will wrap the component in
+ * a special observing Proxy that should detect any changes you make.
+ * NOTE: for components with complex data structures, it is probably
+ * better to use the explicit `ecs.update(component)` approach.
  */
 
 // for example, lets say `component` is of type `Foo`
 ecs.update(component); 
-// now all reactive systems that have `Foo` as `needed` or `optional`
-// will be run on the next update cycle.
+/*
+ * now all reactive systems that have `Foo` as `needed` or `optional`
+ * will be run on the next update cycle.
+ */
+
+/* 
+ * for the new auto-updates when adding the `Foo` `component` to the
+ * entity, set the `auto` parameter to `true`
+ */
+const foo = new Foo();
+ecs.addComponent(myEntity, foo, true);
+// OR
+ecs.create().add(new Foo(), true).build();
+/*
+ * now, when you alter `myDataProp` on `Foo`, all reactive systems 
+ * that have `Foo` as `needed` or `optional` will be run on the next
+ * update cycle.
+ */
+
+
 ```
 
 ## how the ecs instance fits into the `game loop`
@@ -164,7 +230,8 @@ ecs.create()
     position.y = 2;
     return position;
   })
-  .add(new Visible())
+  // make this visisble component auto-update
+  .add(new Visible(), true)
   .tag('oh hai')
   .build();
 
