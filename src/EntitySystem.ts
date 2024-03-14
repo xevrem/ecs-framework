@@ -58,7 +58,6 @@ export class EntitySystem<
   static _before: AnySystemType[];
   static _after: AnySystemType[];
 
-  private _id = -1;
   private _entities: Bag<Entity> = new Bag<Entity>();
   private _ecsInstance: EcsInstance;
   private _priority: number;
@@ -67,8 +66,8 @@ export class EntitySystem<
   private _dirty = false;
 
   protected reactive = false;
-
   props: EntitySystemArgs<Props, Needed, Optional, Unwanted, Mutated>;
+
   needed!: [...Needed];
   optional!: [...Optional];
   unwanted!: [...Unwanted];
@@ -294,10 +293,10 @@ export class EntitySystem<
    */
   processAll(): void {
     if (this.shouldProcess()) {
-      this.begin && this.begin();
+      this.begin?.();
       this.processEntities();
       this.processJoin();
-      this.end && this.end();
+      this.end?.();
     }
   }
 
@@ -375,7 +374,7 @@ export class EntitySystem<
   ): void;
   /**
    * alternate to `process`, but auto-retrieves all needed/optional components
-   * for entities in a very efficient data structure. Components are returned in
+   * for entities in an efficient data structure. Components are returned in
    * the exact order of the `needed` array followed by `optional` array
    */
   join?(result: JoinedResult<Needed, Optional>, delta: number): void;

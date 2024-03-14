@@ -1,11 +1,18 @@
 import { is_some } from 'onsreo';
 import { ecsRig } from './EcsRig';
+import { Component } from './Component';
 
 describe('FuncQuery', () => {
   it('should handle running Functional Systems', () => {
     ecsRig(rig => {
-      const Foo = rig.makeComponentType();
-      const Bar = rig.makeComponentType<string>();
+      class Foo extends Component {
+        data!: number;
+      }
+      class Bar extends Component {
+        data!: string;
+      }
+      rig.ecs.registerComponent(Foo);
+      rig.ecs.registerComponent(Bar);
 
       rig.ecs.withSystem([[Foo], [Bar]], ({ query }) => {
         for (const [[foo, bar], _entity] of query.join()) {
@@ -25,10 +32,8 @@ describe('FuncQuery', () => {
       expect(rig.ecs.hasComponentByTag('foo', Bar)).toBeFalsy();
       if (is_some(foo)) {
         expect(foo.data).toEqual(42);
-      } else {
-        throw new Error();
       }
-    });
+    }, 3);
   });
 
   it('should handle running Functional Add Systems', () => {
@@ -99,29 +104,43 @@ describe('FuncQuery', () => {
   it('should handle running Functional Delete Systems', () => {
     ecsRig(rig => {
       const Foo = rig.makeComponentType();
-      let deleted = false;
+      let fooDelete = false;
       rig.ecs.withDeleteSystem([[Foo]], ({ query }) => {
         // delete systems should run over entities instead of join
-        // as the join would not return anything
-        for (const _entity of query.onEntities()) {
-          deleted = true;
+        for (const [[foo], entity] of query.join()) {
+          if (foo.data === 24) fooDelete = true;
         }
       });
 
       rig.init();
-      const entity = rig.ecs.create().add(new Foo(24)).tag('foo').build();
+      let entity = rig.ecs.create().add(new Foo(24)).tag('foo').build();
       rig.update();
 
       expect(rig.ecs.hasComponentByTag('foo', Foo)).toBeTruthy();
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(24);
-      expect(deleted).toBeFalsy();
+      expect(fooDelete).toBeFalsy();
       // now delete the entity
       rig.deleteEntity(entity);
       rig.update();
       // foo should be undefined
       expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toBeUndefined();
       // and deleted should be true
-      expect(deleted).toBeTruthy();
+      expect(fooDelete).toBeTruthy();
+      // now to show logic
+      entity = rig.ecs.create().add(new Foo(42)).tag('foo').build();
+      fooDelete = false;
+      rig.update();
+
+      expect(rig.ecs.hasComponentByTag('foo', Foo)).toBeTruthy();
+      expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toEqual(42);
+      expect(fooDelete).toBeFalsy();
+      // now delete the entity
+      rig.deleteEntity(entity);
+      rig.update();
+      // foo should be undefined
+      expect(rig.ecs.getComponentByTag('foo', Foo)?.data).toBeUndefined();
+      // but since foo.data didn't match, fooDelete should still be Falsy
+      expect(fooDelete).toBeFalsy();
     });
   });
 

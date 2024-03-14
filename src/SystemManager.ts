@@ -247,8 +247,14 @@ export class SystemManager {
       system.query.validate(entity) && system.deleteEntity(entity);
     }
     for (let i = this._functionalDeleteSystems.length; i--; ) {
-      const [_system, query] = this._functionalDeleteSystems[i];
+      const [system, query] = this._functionalDeleteSystems[i];
       query.entities.push(entity);
+      system({
+        delta: this._ecsInstance.delta,
+        ecs: this._ecsInstance,
+        query,
+      });
+      query.clear();
     }
   }
 
@@ -334,6 +340,7 @@ export class SystemManager {
     this._reactiveSystems = [];
     this._systemTypes = {};
     this._systems = [];
+    this._nextId = 0;
   }
 
   /**
@@ -485,33 +492,29 @@ export class SystemManager {
         delta,
       }),
     );
-    this._functionalDeleteSystems.forEach(([func, query]) =>
+    this._functionalAddSystems.forEach(([func, query]) => {
       func({
         query,
         ecs: this._ecsInstance,
         delta,
-      }),
-    );
-    this._functionalAddSystems.forEach(([func, query]) =>
+      });
+      query.clear();
+    });
+    this._functionalUpdateSystems.forEach(([func, query]) => {
       func({
         query,
         ecs: this._ecsInstance,
         delta,
-      }),
-    );
-    this._functionalUpdateSystems.forEach(([func, query]) =>
+      });
+      query.clear();
+    });
+    this._functionalCreateSystems.forEach(([func, query]) => {
       func({
         query,
         ecs: this._ecsInstance,
         delta,
-      }),
-    );
-    this._functionalCreateSystems.forEach(([func, query]) =>
-      func({
-        query,
-        ecs: this._ecsInstance,
-        delta,
-      }),
-    );
+      });
+      query.clear();
+    });
   }
 }

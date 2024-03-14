@@ -8,6 +8,7 @@ import {
   JoinedData,
   JoinedQuery,
   JoinedResult,
+  OrderedComponentOptionTuple,
 } from './types';
 
 export declare interface QueryArgs<
@@ -77,7 +78,7 @@ export class Query<
         if (this._ecsInstance.hasComponent(entity, this._unwanted[i]))
           continue entityLoop;
       }
-      const components: any[] = [];
+      const components: JoinedData<Needed, Optional> = [] as any;
       // for the following for-loops, order maters
       for (let i = 0; i < this._needed.length; i++) {
         const component = this._ecsInstance.getComponent(
@@ -85,17 +86,17 @@ export class Query<
           this._needed[i],
         );
         if (!component) continue entityLoop;
-        components.push(component);
+        components.addItem(component);
       }
 
       for (let i = 0; i < this._optional.length; i++) {
         const component = this._ecsInstance.getComponent(
           entity,
           this._optional[i],
-        );
+        ) as OrderedComponentOptionTuple<Optional>[number];
         components.push(component);
       }
-      this._data.push([components, entity] as JoinedQuery<Needed, Optional>);
+      this._data.push([components, entity]);
     }
   }
 

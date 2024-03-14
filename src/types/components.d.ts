@@ -6,3 +6,5 @@ export declare type ComponentTypes = ComponentType[];
 
 export declare type ComponentOptionType = Option<typeof Component>;
 export declare type ComponentOptionTypes = ComponentOptionType[];
+
+export declare type ConstructorType = abstract new (...args: any) => any;

@@ -46,6 +46,13 @@ export class FuncQuery<
   }
 
   /**
+   * clear entity list
+   */
+  clear(): void {
+    this.entities = [];
+  }
+
+  /**
    * does the given entity have an unwanted component
    * @param entity the entity to check
    * @returns 'true' if an unwanted component was found
@@ -88,8 +95,6 @@ export class FuncQuery<
       this.optional,
       this.unwanted,
     );
-    // clear, since this is reactive, clear the array after run,
-    this.entities = [];
     return results;
   }
 
