@@ -1,9 +1,5 @@
 {
-  description = "behavey nix env";
-
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  };
+  description = "ecsf nix env";
 
   outputs = { self, nixpkgs }:
   let
@@ -11,6 +7,7 @@
     pkgs = nixpkgs.legacyPackages.${system};
     nodePkgs = with pkgs.nodePackages; [
       eslint
+      pnpm
       prettier
       stylelint
       typescript
@@ -18,18 +15,16 @@
       vscode-langservers-extracted
       yaml-language-server
     ];
+    nodeDeps = [
+      nodePkgs
+    ];
     in
     {
       devShells.${system}.default =
         pkgs.mkShell {
-          packages = with pkgs; [
+          packages = nodeDeps ++ (with pkgs; [
             nodejs_20
-            nodePkgs
-          ];
-
-          shellHook = ''
-              echo "<nix development shell>"
-            '';
+          ]);
         };
     };
 }
