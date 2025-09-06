@@ -97,7 +97,7 @@ export class EntityBuilder {
       return this.entity;
     } catch (cause) {
       this.ecs.abort(this.entity);
-      return new EntityBuildError('ENTITY BUILDER ERROR:', { cause });
+      throw new EntityBuildError('ENTITY BUILDER ERROR:', { cause });
     }
   }
   /**
